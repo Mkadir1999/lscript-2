@@ -1,8 +1,15 @@
-*The lazy script has not been updated for a while due to me being very busy with my life. I will try my best to upload an update when I find the time*
-
 ## Welcome to the LAZY script  v2.1.8
 
 > **New in 2.1.8:** `update-kali` — full Kali OS upgrade from inside `l` or as a shell alias. See **[FEATURES.md](FEATURES.md)**.
+
+### Credits & fork
+
+This project is a **fork** of the original [LAZY script (lscript)](https://github.com/arismelachroinos/lscript) by **[Aris Melachroinos](https://github.com/arismelachroinos)**.
+
+- **Original author:** [arismelachroinos](https://github.com/arismelachroinos) — created lscript and the LAZY script concept  
+- **This fork:** [Mkadir1999/lscript-2](https://github.com/Mkadir1999/lscript-2) — maintenance, bug fixes, and new features (v2.1.7+)
+
+If you use this fork, please **star and credit the original repo** as well. This work builds on Aris's project and remains under the same spirit and license (GPL-3.0).
 
 <p align="center">
 <img src="https://i.imgur.com/awIplS6.jpg"/>
@@ -154,8 +161,8 @@ View your MAC faster
 ```
 cd
 apt-get update
-git clone https://github.com/arismelachroinos/lscript.git
-cd lscript
+git clone https://github.com/Mkadir1999/lscript-2.git
+cd lscript-2
 chmod +x install.sh
 ./install.sh
 ```
@@ -196,3 +203,6 @@ Run the script
 Type "update"
 ```
 
+### Original project
+
+Forked from **[arismelachroinos/lscript](https://github.com/arismelachroinos/lscript)** by [Aris Melachroinos](https://github.com/arismelachroinos). Please support the original author.

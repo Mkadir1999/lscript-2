@@ -1,5 +1,7 @@
 2.1.8
-==== Kali system upgrade ====
+==== Kali system upgrade + attribution ====
+
+- Credit: fork of https://github.com/arismelachroinos/lscript by Aris Melachroinos; maintained by Mkadir1999.
 
 - NEW `update-kali` — full Kali upgrade: apt update, full-upgrade, autoremove, autoclean (from inside `l` or shell alias).
 - Aliases: `update-kali`, `updatekali`, `kaliupdate`, `kali-update` (with confirmation); `update-kali-yes` (no prompt).

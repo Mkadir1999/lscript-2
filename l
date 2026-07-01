@@ -2,6 +2,11 @@
 
 # set -x
 VERSION=2.1.8
+LSCRIPT_GITHUB_USER="Mkadir1999"
+LSCRIPT_GITHUB_REPO="lscript-2"
+LSCRIPT_GITHUB_BRANCH="main"
+LSCRIPT_GITHUB_URL="https://github.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}.git"
+LSCRIPT_RAW_VERSION_URL="https://raw.githubusercontent.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}/${LSCRIPT_GITHUB_BRANCH}/version.txt"
 LPATH="${LPATH:-/root/lscript}"
 for _lscript_lib in lscript_conf.sh lscript_term.sh lscript_utils.sh
 do
@@ -303,6 +308,7 @@ function banner
 	echo -e "$COL         ██║     ██╔══██║ ███╔╝    ╚██╔╝  $CE"
 	echo -e "$COL    The  ███████╗██║  ██║███████╗   ██║  script$CE"
 	echo -e "$COL         ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   $CE"
+	echo -e ""$BS"Fork by Mkadir1999 · Original: https://github.com/arismelachroinos/lscript"$CE""
 	echo -e ""$YS"if"$CE") Ifconfig           "$YS"l"$CE") Local IPs & gateways "$RS"|"$CE"  "$YS"scan"$CE") Arp-scan network"
 	if [[ "$WLANCHECKING" = "" ]]
 	then
@@ -6316,7 +6322,7 @@ function update_lscript
 	TESTINTERNETCONNECTION=$(curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
 	if [[ "$TESTINTERNETCONNECTION" != "" ]]
 	then
-		VER=$(timeout -s SIGTERM 20 curl "https://raw.githubusercontent.com/arismelachroinos/lscript/master/version.txt" 2>/dev/null)
+		VER=$(timeout -s SIGTERM 20 curl "$LSCRIPT_RAW_VERSION_URL" 2>/dev/null)
 		if [[ "$VERSION" != "$VER" ]]
 		then
 			clear
@@ -6342,7 +6348,7 @@ function update_lscript
 				mv "$LPATH" /root/lscriptold/lscript
 				sleep 1
 				cd
-				git clone https://github.com/arismelachroinos/lscript.git
+				git clone "$LSCRIPT_GITHUB_URL" "$LPATH"
 				cd "$LPATH"
 				chmod +x install.sh
 				clear
@@ -6563,7 +6569,7 @@ function tools_menu
 			echo -e ""
 			echo -e ""$BS"Do you want another tool to be added in the script?"$CE""
 			echo -e ""$BS"Submit it as an issue on my github repo:"$CE""
-			echo -e "	"$YS"https://github.com/arismelachroinos/lscript"$CE""
+			echo -e "	"$YS"https://github.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}"$CE""
 			echo -e ""
 			echo -e ""
 			echo -e "$PAKTGB"
@@ -9935,7 +9941,7 @@ function doctor_menu
 
 		echo -e ""
 		echo -e ""$YS"lscript version:"$CE""
-		LATEST=$(timeout -s SIGTERM 10 curl "https://raw.githubusercontent.com/arismelachroinos/lscript/master/version.txt" 2>/dev/null)
+		LATEST=$(timeout -s SIGTERM 10 curl "$LSCRIPT_RAW_VERSION_URL" 2>/dev/null)
 		doctor_check_version "lscript" "$VERSION" "$LATEST" "Type 'update' from main menu."
 
 		echo -e ""

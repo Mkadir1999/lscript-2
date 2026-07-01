@@ -1,6 +1,8 @@
-# lscript v2.1.7 — Feature Reference
+# lscript v2.1.8 — Feature Reference
 
 **LAZY script (lscript)** is a Bash automation toolkit for **Kali Linux** that wraps WiFi penetration testing, MITM workflows, and 90+ third-party security tools behind a single command: `l`.
+
+> **Fork of** [arismelachroinos/lscript](https://github.com/arismelachroinos/lscript) by **Aris Melachroinos**. This repo ([Mkadir1999/lscript-2](https://github.com/Mkadir1999/lscript-2)) adds maintenance, bug fixes, and features from v2.1.7 onward.
 
 > **Legal notice:** Only use on networks and systems you own or have explicit written permission to test. The authors are not responsible for misuse.
 
@@ -11,8 +13,8 @@
 ```bash
 # Native Kali (root)
 cd
-git clone https://github.com/YOUR_USER/lscript.git
-cd lscript
+git clone https://github.com/Mkadir1999/lscript-2.git
+cd lscript-2
 chmod +x install.sh
 ./install.sh          # interactive
 # or
