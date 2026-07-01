@@ -1,0 +1,79 @@
+#!/bin/bash
+LPATH="/root/lscript"
+export LPATH
+DPIDDD=$$
+echo "$DPIDDD" > "$LPATH/dpiddd.txt"
+i=1
+delay="$Del"
+if [[ "$delay" == "" ]]
+then
+	delay=5
+fi
+while [[ "$i" == 1 ]]
+do
+	if command -v pyrit >/dev/null 2>&1
+	then
+		TEMP=$(pyrit -r "$HANDCAP" analyze 2>/dev/null)
+		TEMPHANDD=$(echo "$TEMP" | grep "good")
+		TEMPHAND=$(echo "$TEMP" | grep "workable")
+	else
+		TEMP=$(aircrack-ng "$HANDCAP" 2>/dev/null)
+		TEMPHANDD=$(echo "$TEMP" | grep -E "1 handshake|WPA \(1 handshake\)")
+		TEMPHAND=""
+	fi
+	if [[ "$TEMPHANDD" == "" && "$TEMPHAND" == "" ]]
+	then
+		printf "."
+	else
+		clear
+		echo -e "HANDSHAKE FOUND!"
+		sleep 2
+		echo -e "Exiting terminals..."
+		sleep 1
+		if [[ -f "$LPATH/dpid.txt" ]]
+		then
+			read -r DPID < "$LPATH/dpid.txt"
+			if [[ "$DPID" =~ ^[0-9]+$ ]]
+			then
+				PIF=$(ps -A | grep "$DPID")
+				if [[ "$PIF" != "" ]]
+				then
+					kill -- "$DPID"
+				fi
+			fi
+		fi
+		break
+	fi
+	sleep "$delay"
+done
+j=1
+while true
+do
+	PIDSE="dpid"$j".txt"
+	if [[ -f "$LPATH/$PIDSE" ]]
+	then
+		read -r DPID < "$LPATH/$PIDSE"
+		if [[ "$DPID" =~ ^[0-9]+$ ]]
+		then
+			PIF=$(ps -A | grep "$DPID")
+			if [[ "$PIF" != "" ]]
+			then
+				kill -- "$DPID"
+			fi
+		fi
+	else
+		rm -f "$LPATH"/dpid*.txt
+		break
+	fi
+	j=$((j+1))
+done
+if [[ -f "$LPATH/dpiddd.txt" ]]
+then
+	read -r DPID2 < "$LPATH/dpiddd.txt"
+	if [[ "$DPID2" =~ ^[0-9]+$ ]]
+	then
+		kill -INT "$DPID2"
+	fi
+fi
+exit
+

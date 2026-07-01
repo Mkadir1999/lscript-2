@@ -1,0 +1,30 @@
+# lscript configuration — copy to settings/lscript.conf (created automatically on first run)
+# Edit values and restart lscript (type l) to apply.
+
+LPATH=/root/lscript
+DEFMAC=00:11:22:33:44:55
+
+# Log rotation (doctor.log, sslstrip.log) and handshake file cap
+LOG_ROTATE_MAX_MB=10
+HANDSHAKE_MAX_FILES=500
+
+# Terminal colors (ANSI escape codes)
+COLOR_YS=\e[1;33m
+COLOR_BS=\e[0;34m
+COLOR_CE=\e[0m
+COLOR_RS=\e[1;31m
+COLOR_BLS=\e[0;30m
+COLOR_DGYS=\e[1;30m
+COLOR_LBS=\e[1;34m
+COLOR_GNS=\e[0;32m
+COLOR_LGNS=\e[1;32m
+COLOR_CYS=\e[0;36m
+COLOR_LCYS=\e[1;36m
+COLOR_DRS=\e[0;31m
+COLOR_PS=\e[0;35m
+COLOR_LPS=\e[1;35m
+COLOR_BRS=\e[0;33m
+COLOR_LGYS=\e[0;37m
+COLOR_WHS=\e[1;37m
+# Default logo color (overridden by settings/logocolor.txt if present)
+COLOR_LOGO=\e[1;31m
