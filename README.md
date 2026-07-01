@@ -1,6 +1,6 @@
-## Welcome to the LAZY script  v2.1.8
+## Welcome to the LAZY script  v2.2.0
 
-> **New in 2.1.8:** `update-kali` — full Kali OS upgrade from inside `l` or as a shell alias. See **[FEATURES.md](FEATURES.md)**.
+> **New in 2.2.0:** `spoof` / `lab` — training lab menu (DNS spoof, ARP MITM, scope, audit log). `labcheck` verifies your setup. See **[FEATURES.md](FEATURES.md)**.
 
 ### About
 
@@ -140,7 +140,7 @@ View your MAC faster
 	
 **Others**
 
-	Email spoofing
+	Email spoofing (via `spoof` / menu 15)
 	Metasploit automation (create payloads,listeners,save listeners for later etc...)
 	Auto eternalblue exploiting (check on ks) -> hidden shortcuts
 	Browser auto-expoiting with BeEF and MITMf

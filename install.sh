@@ -71,6 +71,7 @@ then
 	cp -r "$DIR"/* /root/lscript
 	chmod +x /root/lscript/install.sh
 	chmod +x /root/lscript/lib/*.sh 2>/dev/null || true
+chmod +x /root/lscript/labs/*.sh 2>/dev/null || true
 	if [[ "$NONINTERACTIVE" -eq 1 ]]
 	then
 		bash /root/lscript/install.sh --yes
@@ -99,6 +100,7 @@ chmod +x /root/lscript/ls/l132.sh
 chmod +x /root/lscript/ls/l133.sh
 chmod +x /root/lscript/uninstall.sh
 chmod +x /root/lscript/lib/*.sh 2>/dev/null || true
+chmod +x /root/lscript/labs/*.sh 2>/dev/null || true
 clear
 echo -e "Copying script to /usr/local/bin/lscript"
 sleep 1

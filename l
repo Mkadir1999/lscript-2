@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # set -x
-VERSION=2.1.8
+VERSION=2.2.0
 LSCRIPT_GITHUB_USER="Mkadir1999"
 LSCRIPT_GITHUB_REPO="lscript-2"
 LSCRIPT_GITHUB_BRANCH="main"
@@ -9,7 +9,7 @@ LSCRIPT_AUTHOR="KDR"
 LSCRIPT_GITHUB_URL="https://github.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}.git"
 LSCRIPT_RAW_VERSION_URL="https://raw.githubusercontent.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}/${LSCRIPT_GITHUB_BRANCH}/version.txt"
 LPATH="${LPATH:-/root/lscript}"
-for _lscript_lib in lscript_conf.sh lscript_term.sh lscript_utils.sh
+for _lscript_lib in lscript_conf.sh lscript_term.sh lscript_utils.sh lscript_lab.sh
 do
 	if [[ -f "$LPATH/lib/$_lscript_lib" ]]
 	then
@@ -22,7 +22,7 @@ unset _lscript_lib
 HOWMANYTOOLS=53
 BACKL="0"
 DONATIONS=13
-LATESTCHANGELOGLINES=26
+LATESTCHANGELOGLINES=24
 cd
 #############DEFAULTS###############
 function defaults_l
@@ -38,7 +38,8 @@ function defaults_l
 		mkdir "$KSPATH"
 	fi
 #making sure settings, profiles, handshakes, wordlists exist
-	mkdir -p "$LPATH/settings" "$LPATH/profiles" "$LPATH/backups" /root/handshakes/WEP /root/handshakes/deauth /root/wordlists 2>/dev/null
+	mkdir -p "$LPATH/settings" "$LPATH/profiles" "$LPATH/backups" "$LPATH/labs" "$LPATH/logs" /root/handshakes/WEP /root/handshakes/deauth /root/wordlists 2>/dev/null
+	lscript_lab_ensure_dirs 2>/dev/null
 	lscript_conf_ensure_file 2>/dev/null
 	lscript_rotate_logs 2>/dev/null
 #wififb file
@@ -320,6 +321,7 @@ function banner
 		echo -e ""$YS" 2"$CE") Enable $WLANNM${SPACESM}"$YS"d2"$CE") Disable $WLANNM${SPACESM}  "$RS"|"$CE"  "$YS"stop"$CE") Stop monitor mode"
 	fi
 	echo -e ""$YS" 3"$CE") Change MAC        "$YS"d3"$CE") Restore original MAC "$RS"|"$CE""$YS"update"$CE") lscript update    "$YS"update-kali"$CE") apt upgrade"
+	echo -e ""$RS"|"$CE"  "$YS"spoof"$CE") Lab / spoof menu   "$YS"labcheck"$CE") Verify lab setup   "$YS"doctor"$CE") Health check"
 	if [[ -f /usr/bin/anonym8 ]]
 	then
 	echo -e ""$YS" 4"$CE") Enable anonym8    "$YS"d4"$CE") Disable anonym8      "$RS"|"$CE""$YS"errors"$CE") Fix some errors"
@@ -336,7 +338,7 @@ function banner
 	fi
 	echo -e ""$YS" 7"$CE") View public IP                             "$RS"|"$CE"     "$YS"s"$CE") Go to settings menu"
 	echo -e ""$YS" 8"$CE") View MAC"
-	echo -e ""$YS" 9"$CE") TOOLS             "$YS"15"$CE") Spoof EMAIL           "$YS"22"$CE") Show bandwidth"
+	echo -e ""$YS" 9"$CE") TOOLS             "$YS"15"$CE") Lab / spoof menu        "$YS"22"$CE") Show bandwidth"
 	if [[ -f /root/ngrok ]]
 	then
 		echo -e ""$YS"10"$CE") Handshake         "$YS"16"$CE") Ngrok port forward"
@@ -510,7 +512,7 @@ function checkifalready
 	done
 	if [[ "$GOOD" = "1" ]]
 	then
-		if [[ "$CHECKKS" = "etercheck" || "$CHECKKS" = "eternalblue" || "$CHECKKS" = "changelog" || "$CHECKKS" = "wififb" || "$CHECKKS" = "nessusstop" || "$CHECKKS" = "nessusstart" || "$CHECKKS" = "pstop" || "$CHECKKS" = "pstart" || "$CHECKKS" = "astop" || "$CHECKKS" = "astart" || "$CHECKKS" = "settings" || "$CHECKKS" = "disclaimer" || "$CHECKKS" = "d" || "$CHECKKS" = "s" || "$CHECKKS" = "g" || "$CHECKKS" = "l" || "$CHECKKS" = "" || "$CHECKKS" = "if" || "$CHECKKS" = "ifconfig" || "$CHECKKS" = "interfaces" || "$CHECKKS" = "interface" || "$CHECKKS" = "errors" || "$CHECKKS" = "00" || "$CHECKKS" = "exit" || "$CHECKKS" = "update" || "$CHECKKS" = "d1" || "$CHECKKS" = "d2" || "$CHECKKS" = "d3" || "$CHECKKS" = "d4" || "$CHECKKS" = "d5" || "$CHECKKS" = "d6" || "$CHECKKS" = "d7" || "$CHECKKS" = "gg" || "$CHECKKS" = "ks" || "$CHECKKS" = "doctor" || "$CHECKKS" = "health" || "$CHECKKS" = "refresh" || "$CHECKKS" = "toolsup" || "$CHECKKS" = "profile" || "$CHECKKS" = "profiles" || "$CHECKKS" = "psave" || "$CHECKKS" = "pload" || "$CHECKKS" = "pexport" || "$CHECKKS" = "pimport" || "$CHECKKS" = "backup" || "$CHECKKS" = "restore" || "$CHECKKS" = "rotate" || "$CHECKKS" = "rotatelogs" || "$CHECKKS" = "update-kali" || "$CHECKKS" = "updatekali" || "$CHECKKS" = "kaliupdate" || "$CHECKKS" = "kali-update" || "$CHECKKS" = "update-kali-yes" || "$CHECKKS" = "updatekali-yes" ]]
+		if [[ "$CHECKKS" = "etercheck" || "$CHECKKS" = "eternalblue" || "$CHECKKS" = "changelog" || "$CHECKKS" = "wififb" || "$CHECKKS" = "nessusstop" || "$CHECKKS" = "nessusstart" || "$CHECKKS" = "pstop" || "$CHECKKS" = "pstart" || "$CHECKKS" = "astop" || "$CHECKKS" = "astart" || "$CHECKKS" = "settings" || "$CHECKKS" = "disclaimer" || "$CHECKKS" = "d" || "$CHECKKS" = "s" || "$CHECKKS" = "g" || "$CHECKKS" = "l" || "$CHECKKS" = "" || "$CHECKKS" = "if" || "$CHECKKS" = "ifconfig" || "$CHECKKS" = "interfaces" || "$CHECKKS" = "interface" || "$CHECKKS" = "errors" || "$CHECKKS" = "00" || "$CHECKKS" = "exit" || "$CHECKKS" = "update" || "$CHECKKS" = "spoof" || "$CHECKKS" = "lab" || "$CHECKKS" = "labcheck" || "$CHECKKS" = "d1" || "$CHECKKS" = "d2" || "$CHECKKS" = "d3" || "$CHECKKS" = "d4" || "$CHECKKS" = "d5" || "$CHECKKS" = "d6" || "$CHECKKS" = "d7" || "$CHECKKS" = "gg" || "$CHECKKS" = "ks" || "$CHECKKS" = "doctor" || "$CHECKKS" = "health" || "$CHECKKS" = "refresh" || "$CHECKKS" = "toolsup" || "$CHECKKS" = "profile" || "$CHECKKS" = "profiles" || "$CHECKKS" = "psave" || "$CHECKKS" = "pload" || "$CHECKKS" = "pexport" || "$CHECKKS" = "pimport" || "$CHECKKS" = "backup" || "$CHECKKS" = "restore" || "$CHECKKS" = "rotate" || "$CHECKKS" = "rotatelogs" || "$CHECKKS" = "update-kali" || "$CHECKKS" = "updatekali" || "$CHECKKS" = "kaliupdate" || "$CHECKKS" = "kali-update" || "$CHECKKS" = "update-kali-yes" || "$CHECKKS" = "updatekali-yes" ]]
 		then
 			GOOD="0"
 			echo -e ""$RS"This shortcut is already in use by the script."$CE""
@@ -9492,7 +9494,7 @@ function main_options
 	elif [[ "$YORNAA" = "15" ]]
 	then
 		BACKL="1"
-		spoof_email
+		spoof_menu
 	elif [[ "$YORNAA" = "ks" ]]
 	then
 		keyboard_shortcuts
@@ -9795,6 +9797,12 @@ function main_options
 		lscript_update_kali 1
 		echo -e "$PAKTC"
 		$READAK
+	elif [[ "$YORNAA" = "spoof" || "$YORNAA" = "lab" ]]
+	then
+		spoof_menu
+	elif [[ "$YORNAA" = "labcheck" ]]
+	then
+		labcheck_menu
 	elif [[ "$YORNAA" = "exit" ]]
 	then
 		clear
@@ -9804,6 +9812,283 @@ function main_options
 var1=1
 check_if_ks
 ####
+}
+
+#----------------LAB / SPOOF (educational)---------------
+function lab_view_creds
+{
+	clear
+	TERMINALTITLE="CAPTURED CREDENTIALS (LAB)"
+	dash_calc
+	printf '\033]2;LAB CREDS\a'
+	echo -e ""$BS"Training lab — captured data only."$CE""
+	echo -e ""
+	if [[ -f /root/sslstrip.log ]]
+	then
+		echo -e ""$YS"--- /root/sslstrip.log (last 40 lines) ---$CE""
+		tail -n 40 /root/sslstrip.log
+	else
+		echo -e ""$RS"No /root/sslstrip.log yet."$CE""
+	fi
+	echo -e ""
+	if [[ -f "$wififbfile" ]]
+	then
+		echo -e ""$YS"--- WiFi phishing log ($wififbfile) ---$CE""
+		tail -n 20 "$wififbfile"
+	fi
+	if [[ -f "$wififbpassfile" ]]
+	then
+		echo -e ""$YS"--- WiFi passwords ($wififbpassfile) ---$CE""
+		tail -n 20 "$wififbpassfile"
+	fi
+	echo -e ""
+	echo -e "$PAKTC"
+	$READAK
+}
+function lab_scope_menu
+{
+	while true
+	do
+		clear
+		TERMINALTITLE="LAB SCOPE"
+		dash_calc
+		printf '\033]2;LAB SCOPE\a'
+		lscript_lab_training_banner
+		echo -e ""
+		echo -e "File: "$YS"$LSCRIPT_LAB_SCOPE_FILE"$CE""
+		if lscript_lab_scope_is_set
+		then
+			echo -e ""$LGNS"Scope is active (only listed IPs allowed)."$CE""
+		else
+			echo -e ""$YS"No scope set — all IPs allowed (set targets for safer labs)."$CE""
+		fi
+		echo -e ""
+		cat "$LSCRIPT_LAB_SCOPE_FILE" 2>/dev/null | head -n 20
+		echo -e ""
+		echo -e ""$YS" a"$CE") Add IP to scope"
+		echo -e ""$YS" c"$CE") Clear scope"
+		echo -e ""$YS" e"$CE") Edit in text editor"
+		echo -e ""$YS" b"$CE") Go back"
+		echo -e "Choose: "
+		read -r LSCH
+		clear
+		if [[ "$LSCH" = "b" || "$LSCH" = "back" ]]
+		then
+			break
+		elif [[ "$LSCH" = "a" ]]
+		then
+			echo -e "Enter IP to allow: "
+			read -r LIP
+			if [[ -n "$LIP" ]]
+			then
+				echo "$LIP" >> "$LSCRIPT_LAB_SCOPE_FILE"
+				lscript_lab_audit "scope_add" "ip=$LIP"
+				echo -e ""$YS"Added."$CE""
+				sleep 1
+			fi
+		elif [[ "$LSCH" = "c" ]]
+		then
+			: > "$LSCRIPT_LAB_SCOPE_FILE"
+			lscript_lab_audit "scope_clear" ""
+			echo -e "Scope cleared."
+			sleep 1
+		elif [[ "$LSCH" = "e" ]]
+		then
+			mousepad "$LSCRIPT_LAB_SCOPE_FILE" 2>/dev/null || gedit "$LSCRIPT_LAB_SCOPE_FILE" 2>/dev/null || nano "$LSCRIPT_LAB_SCOPE_FILE"
+		fi
+	done
+}
+function lab_dns_spoof_wizard
+{
+	clear
+	lscript_lab_training_banner
+	echo -e ""
+	echo -e "Interface for dnsspoof ("$YS"Enter"$CE"=$ETH"): "
+	read -r LABIF
+	[[ -z "$LABIF" ]] && LABIF="$ETH"
+	if ! command -v dnsspoof >/dev/null 2>&1
+	then
+		echo -e ""$RS"dnsspoof not found. apt-get install -y dsniff"$CE""
+		sleep 2
+		return
+	fi
+	HOSTS="$LPATH/labs/hosts.lab"
+	if [[ ! -f "$HOSTS" ]]
+	then
+		cp "$LPATH/labs/hosts.lab.example" "$HOSTS" 2>/dev/null || touch "$HOSTS"
+		echo -e "Created $HOSTS — edit it, then run again."
+		mousepad "$HOSTS" 2>/dev/null || nano "$HOSTS"
+		return
+	fi
+	export LAB_IF="$LABIF"
+	lscript_lab_audit "dns_spoof" "if=$LABIF"
+	lscript_term --title "DNS SPOOF LAB" --disown -- bash -c "export LPATH='$LPATH' LAB_IF='$LABIF'; bash '$LPATH/labs/dns_spoof_lab.sh'; exec bash"
+	echo -e ""$YS"DNS spoof started in new terminal."$CE""
+	sleep 2
+}
+function lab_arp_mitm_wizard
+{
+	clear
+	lscript_lab_training_banner
+	route -n
+	echo -e ""
+	echo -e "Gateway IP: "
+	read -r GATENM
+	echo -e "Interface ("$YS"Enter"$CE"=$ETH"): "
+	read -r GATEINT
+	[[ -z "$GATEINT" ]] && GATEINT="$ETH"
+	echo -e "Target IP: "
+	read -r TARGIP
+	if ! lscript_lab_require_scope "$TARGIP" "Target"
+	then
+		sleep 3
+		return
+	fi
+	if ! lscript_lab_require_scope "$GATENM" "Gateway"
+	then
+		sleep 3
+		return
+	fi
+	export GATENM GATEINT TARGIP
+	lscript_lab_audit "arp_mitm_start" "gw=$GATENM target=$TARGIP if=$GATEINT"
+	lscript_term --disown -- bash -c "export LPATH='$LPATH' GATENM='$GATENM' GATEINT='$GATEINT' TARGIP='$TARGIP'; bash '$LPATH/labs/arp_mitm_lab.sh'; exec bash"
+	lscript_term --disown -- bash -c "export LPATH='$LPATH' GATENM='$GATENM' GATEINT='$GATEINT' TARGIP='$TARGIP'; bash '$LPATH/labs/arp_mitm_lab_reverse.sh'; exec bash"
+	echo -e ""$YS"ARP MITM pair started (two terminals)."$CE""
+	sleep 2
+}
+function lab_mac_random
+{
+	clear
+	echo -e "Interface ("$YS"Enter"$CE"=$WLANN): "
+	read -r MACIF
+	[[ -z "$MACIF" ]] && MACIF="$WLANN"
+	if ! command -v macchanger >/dev/null 2>&1
+	then
+		echo -e ""$RS"macchanger not installed."$CE""
+		sleep 2
+		return
+	fi
+	ifconfig "$MACIF" down
+	macchanger -r "$MACIF"
+	ifconfig "$MACIF" up
+	lscript_lab_audit "mac_random" "if=$MACIF"
+	echo -e "$PAKTC"
+	$READAK
+}
+function lab_mac_restore
+{
+	clear
+	echo -e "Interface ("$YS"Enter"$CE"=$WLANN): "
+	read -r MACIF
+	[[ -z "$MACIF" ]] && MACIF="$WLANN"
+	ifconfig "$MACIF" down
+	macchanger -p "$MACIF"
+	ifconfig "$MACIF" up
+	lscript_lab_audit "mac_restore" "if=$MACIF"
+	echo -e "$PAKTC"
+	$READAK
+}
+function spoof_menu
+{
+	while true
+	do
+		clear
+		TERMINALTITLE="SPOOF / LAB MENU"
+		dash_calc
+		printf '\033]2;SPOOF LAB\a'
+		lscript_lab_training_banner
+		echo -e ""
+		echo -e ""$YS" 1"$CE") DNS spoof lab (dnsspoof)"
+		echo -e ""$YS" 2"$CE") ARP MITM lab (arpspoof, scoped)"
+		echo -e ""$YS" 3"$CE") Email spoof (SMTP)"
+		echo -e ""$YS" 4"$CE") MAC randomize"
+		echo -e ""$YS" 5"$CE") MAC restore (original)"
+		echo -e ""$YS" 6"$CE") View captured credentials (lab)"
+		echo -e ""$YS" 7"$CE") Lab scope (allowed target IPs)"
+		echo -e ""$YS" 8"$CE") View lab audit log"
+		echo -e ""$YS" 9"$CE") Full MITM menu (sslstrip)"
+		echo -e ""$YS" b"$CE") Go back"
+		echo -e "Choose: "
+		read -r SPCH
+		clear
+		if [[ "$SPCH" = "b" || "$SPCH" = "back" ]]
+		then
+			BACKL=1
+			break
+		elif [[ "$SPCH" = "1" ]]
+		then
+			lab_dns_spoof_wizard
+		elif [[ "$SPCH" = "2" ]]
+		then
+			lab_arp_mitm_wizard
+		elif [[ "$SPCH" = "3" ]]
+		then
+			spoof_email
+		elif [[ "$SPCH" = "4" ]]
+		then
+			lab_mac_random
+		elif [[ "$SPCH" = "5" ]]
+		then
+			lab_mac_restore
+		elif [[ "$SPCH" = "6" ]]
+		then
+			lab_view_creds
+		elif [[ "$SPCH" = "7" ]]
+		then
+			lab_scope_menu
+		elif [[ "$SPCH" = "8" ]]
+		then
+			clear
+			if [[ -f "$LSCRIPT_LAB_AUDIT_LOG" ]]
+			then
+				tail -n 50 "$LSCRIPT_LAB_AUDIT_LOG"
+			else
+				echo -e "No lab actions logged yet."
+			fi
+			echo -e "$PAKTC"
+			$READAK
+		elif [[ "$SPCH" = "9" ]]
+		then
+			mitm_menu
+		fi
+	done
+}
+function labcheck_menu
+{
+	clear
+	TERMINALTITLE="LAB CHECK"
+	dash_calc
+	printf '\033]2;LAB CHECK\a'
+	echo -e ""$BS"lscript v$VERSION lab check — training environment only."$CE""
+	echo -e ""
+	lscript_lab_training_banner
+	echo -e ""
+	if [[ $EUID -eq 0 ]]
+	then
+		echo -e "  ["$LGNS" OK "$CE"]  running as root"
+	else
+		echo -e "  ["$RS"FAIL"$CE"]  not root (use sudo l)"
+	fi
+	if [[ -f "$LPATH/IAGREE.txt" ]]
+	then
+		echo -e "  ["$LGNS" OK "$CE"]  disclaimer accepted"
+	else
+		echo -e "  ["$RS"FAIL"$CE"]  run l once and accept terms"
+	fi
+	if lscript_lab_scope_is_set
+	then
+		echo -e "  ["$LGNS" OK "$CE"]  lab scope configured"
+	else
+		echo -e "  ["$YS"WARN"$CE"]  no lab scope — set via spoof → 7"
+	fi
+	lscript_is_wsl 2>/dev/null && echo -e "  ["$YS"WSL "$CE"]  WSL detected — wireless labs may fail"
+	doctor_check_item "dnsspoof" "command -v dnsspoof" "apt-get install -y dsniff"
+	doctor_check_item "arpspoof" "command -v arpspoof" "apt-get install -y dsniff"
+	doctor_check_item "macchanger" "command -v macchanger" "apt-get install -y macchanger"
+	doctor_check_item "sslstrip" "command -v sslstrip" "apt-get install -y sslstrip"
+	echo -e ""
+	echo -e "$PAKTC"
+	$READAK
 }
 
 #----------------DOCTOR (health-check)---------------

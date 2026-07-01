@@ -1,3 +1,15 @@
+2.2.0
+==== Lab / spoof toolkit (training) ====
+
+- NEW `spoof` / `lab` — guided lab menu: DNS spoof, ARP MITM, email spoof, MAC tools, credential viewer, scope editor, audit log, link to full MITM menu.
+- NEW `labcheck` — pre-flight checks (root, disclaimer, scope, dnsspoof, arpspoof, macchanger, sslstrip).
+- NEW `lib/lscript_lab.sh` — lab scope file, audit log, training banner, IP allow-list for MITM targets.
+- NEW `labs/` scripts: `dns_spoof_lab.sh`, `arp_mitm_lab.sh`, `arp_mitm_lab_reverse.sh`, `hosts.lab.example`.
+- Lab scope: `settings/lab_scope.txt` — restrict ARP MITM to authorized IPs only.
+- Audit log: `logs/lab_audit.log` — records lab actions with timestamp and user.
+- Banner shortcuts: `spoof`, `labcheck`, `doctor` on main screen.
+- Training / educational use only — see DISCLAIMER.md.
+
 2.1.8
 ==== Kali system upgrade + attribution ====
 

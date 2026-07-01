@@ -1,0 +1,5 @@
+# DNS spoof lab hosts file — copy to hosts.lab and edit.
+# Format: IP<TAB>hostname
+# Example (lab VM only):
+# 192.168.1.50	testlogin.lab
+# 192.168.1.50	www.testlogin.lab

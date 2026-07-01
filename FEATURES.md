@@ -1,4 +1,4 @@
-# lscript v2.1.8 — Feature Reference
+# lscript v2.2.0 — Feature Reference
 
 **LAZY script (lscript)** is a Bash automation toolkit for **Kali Linux** that wraps WiFi penetration testing, MITM workflows, and 90+ third-party security tools behind a single command: `l`.
 
@@ -43,6 +43,8 @@ l
 | `update` | Git-pull latest **lscript** from GitHub |
 | `update-kali` | Full **Kali OS** upgrade (apt update + full-upgrade + autoremove + autoclean) |
 | `doctor` | Health-check dependencies and paths |
+| `spoof` / `lab` | Training lab menu — DNS spoof, ARP MITM, email spoof, MAC, scope, audit log |
+| `labcheck` | Verify lab prerequisites (root, deps, scope) |
 | `refresh` | Git-pull all tools under `/root` |
 | `profiles` | Save/load WiFi target profiles |
 | `ks` | Custom keyboard shortcuts for any tool |
@@ -61,6 +63,27 @@ l
 - **MITMf + BeEF** — browser hook injection workflow
 - **Email spoofing**, **SQLmap** automation, **Metasploit** payload/listener helpers
 - **wififb** — auto-save credentials from WiFi phishing (keyboard shortcut)
+
+### Lab / spoof toolkit (v2.2.0 — training only)
+
+| Command | Description |
+|---------|-------------|
+| `spoof` or `lab` | Opens guided lab menu |
+| `labcheck` | Checks root, disclaimer, scope, dnsspoof, arpspoof, macchanger, sslstrip |
+
+**Spoof menu options:**
+
+1. DNS spoof lab (`dnsspoof` + `labs/hosts.lab`)
+2. ARP MITM lab (scoped `arpspoof` pair)
+3. Email spoof (SMTP)
+4. MAC randomize
+5. MAC restore (original)
+6. View captured credentials (`sslstrip.log`, wififb logs)
+7. Lab scope editor (`settings/lab_scope.txt`)
+8. View lab audit log (`logs/lab_audit.log`)
+9. Full MITM menu (sslstrip)
+
+**Scope file:** one IP per line in `settings/lab_scope.txt`. ARP MITM refuses targets not listed when scope is set. Empty scope = no IP restriction (still training-only).
 
 ### Tool installer (built-in)
 
@@ -233,4 +256,4 @@ Map any single key to launch a tool or built-in action without navigating menus.
 
 ## Version
 
-Current release: **2.1.8** — see [Changelog](Changelog) for full history.
+Current release: **2.2.0** — see [Changelog](Changelog) for full history.
