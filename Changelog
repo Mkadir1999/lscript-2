@@ -1,3 +1,25 @@
+2.2.6
+==== Swiss-knife reports + tool explanations ====
+
+- NEW Other Tools entries with plain-English descriptions:
+  * sslscan - TLS certificate/cipher scanner
+  * testssl.sh - deep TLS/SSL configuration audit
+  * Gitleaks - secret/token scanner for repositories
+  * Trivy - vulnerability scanner for filesystems and container images
+  * Semgrep - static code security scanner
+  * Syft - SBOM/package inventory generator
+  * Grype - vulnerability scanner for SBOMs, filesystems, and images
+  * dnsx - DNS resolver/prober for recon lists
+  * Katana - web crawler for authorized targets
+- Expanded `safeaudit` / `audit` into a report hub:
+  * TLS/SSL audit report (sslscan + testssl.sh)
+  * repo secrets + code scan (gitleaks + semgrep)
+  * SBOM + dependency risk (syft + grype + trivy)
+  * web crawl + DNS probe (katana + dnsx)
+- Added `TOOLS.md` so every modern Swiss-knife tool has a short explanation and safe example command.
+- Doctor now checks the new defensive/recon tools.
+- Bumped VERSION and version.txt to 2.2.6.
+
 2.2.5
 ==== Organization + safe audit tools ====
 

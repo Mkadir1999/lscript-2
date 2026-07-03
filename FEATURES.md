@@ -1,4 +1,4 @@
-# lazyscript v2.2.5 — Feature Reference
+# lazyscript v2.2.6 — Feature Reference
 
 **lazyscript** is a Bash automation toolkit for **Kali Linux** that wraps **100+ security tools** behind a single command: **`lazy`**.
 
@@ -45,7 +45,7 @@ lazy
 | `update` | Git-pull latest **lazyscript** from GitHub |
 | `update-kali` | Full **Kali OS** upgrade (apt update + full-upgrade + autoremove + autoclean) |
 | `doctor` | Health-check dependencies and paths |
-| `safeaudit` / `audit` | Guided passive/defensive checks |
+| `safeaudit` / `audit` | Guided passive/defensive checks with saved reports |
 | `spoof` / `lab` | Training lab menu — DNS spoof, ARP MITM, email spoof, MAC, scope, audit log |
 | `labcheck` | Verify lab prerequisites (root, deps, scope) |
 | `refresh` | Git-pull all tools under `/root` |
@@ -171,6 +171,15 @@ lazy
 | **Ligolo-ng** ⭐ | Modern TCP tunnel / pivoting (replaces chisel) |
 | **Lynis** ⭐ | Local Linux security audit |
 | **checksec** ⭐ | Binary hardening checks |
+| **sslscan** ⭐ | TLS certificate/cipher scanner |
+| **testssl.sh** ⭐ | Deep TLS/SSL configuration audit |
+| **Gitleaks** ⭐ | Secret/token scanner for repositories |
+| **Trivy** ⭐ | Vulnerability scanner for filesystems and container images |
+| **Semgrep** ⭐ | Static code security scanner |
+| **Syft** ⭐ | SBOM/package inventory generator |
+| **Grype** ⭐ | Vulnerability scanner for SBOMs, filesystems, and images |
+| **dnsx** ⭐ | DNS resolver/prober for recon lists |
+| **Katana** ⭐ | Web crawler for authorized targets |
 | **Anonsurf** | Anonymize the whole system through Tor (Kali) |
 | **Anonym8** | Similar to anonsurf (auto-configures Tor + iptables) |
 | **Angry IP Scanner** | Fast GUI IP / port scanner (Java) |
@@ -439,10 +448,11 @@ Map any single key to launch a tool or built-in action without navigating menus.
 
 ## Version
 
-Current release: **2.2.5** — see [Changelog](Changelog) for full history.
+Current release: **2.2.6** — see [Changelog](Changelog) for full history.
 
 Recent highlights:
 
+- **2.2.6** — expanded lazyscript into a report-oriented Swiss-knife workflow: added sslscan, testssl.sh, Gitleaks, Trivy, Semgrep, Syft, Grype, dnsx, and Katana; expanded `safeaudit`; added `TOOLS.md`.
 - **2.2.5** — added Amass, Feroxbuster, WhatWeb, Lynis, checksec, a guided Safe audit workflow, safer install/uninstall cleanup, and doctor checks for modern recon/defensive tools.
 - **2.2.4** — 13 broken/redirected GitHub URLs fixed (6 redirects, 4 dead→replaced, 3 deprecated with alternatives); `lscript_load_conf` no longer overrides env-set `LPATH`; `install_ligolo_ng` copy-paste URL bug fixed.
 - **2.2.3** — 20+ bug fixes; 10 new modern tools (Nuclei, ffuf, RustScan, Subfinder, httpx, Naabu, Ligolo-ng, Kerbrute, Sherlock, Gowitness); header banners and section comments added.

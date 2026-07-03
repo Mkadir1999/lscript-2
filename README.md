@@ -1,6 +1,6 @@
-## lazyscript v2.2.5 — the LAZY script
+## lazyscript v2.2.6 — the LAZY script
 
-> **Launch with `lazy`** — the only supported way to open lazyscript. See **[FEATURES.md](FEATURES.md)** for the full reference.
+> **Launch with `lazy`** — the only supported way to open lazyscript. See **[FEATURES.md](FEATURES.md)** for the full reference and **[TOOLS.md](TOOLS.md)** for tool-by-tool explanations.
 >
 > ⚠️ **v2.2.4 breaking change:** the legacy `l` launcher is **no longer installed**. It conflicted with the `l` = `ls` shell alias on Ubuntu/Kali and is removed entirely in this release. If you have an older install, run `sudo /root/lscript/install.sh --yes` to clean it up, then always launch with `lazy`.
 
@@ -78,7 +78,7 @@ After `lazy` is running, you can type these from the main menu prompt:
 | `update` | Git-pull latest **lazyscript** from GitHub |
 | `update-kali` | Full **Kali OS** upgrade (apt update + full-upgrade + autoremove + autoclean) |
 | `doctor` / `health` | Health-check dependencies and paths |
-| `safeaudit` / `audit` | Guided passive/defensive checks |
+| `safeaudit` / `audit` | Guided passive/defensive checks with saved reports |
 | `spoof` / `lab` | Training lab menu — DNS spoof, ARP MITM, email spoof, MAC, scope, audit log |
 | `labcheck` | Verify lab prerequisites (root, deps, scope) |
 | `refresh` / `toolsup` | `git pull` all installed tools under `/root` |
@@ -195,7 +195,7 @@ The installer ships with a multi-select menu (`install` / `reinstall_tools` / me
 | **FindSploit** | Search Exploit-DB / Rapid7 / packetstorm from terminal |
 | **howdoi** | Stack-Overflow-style code answers from the CLI |
 
-### 🔧 Other / general / modern (38)
+### 🔧 Other / general / modern (47)
 
 | Tool | What it does |
 |---|---|
@@ -214,6 +214,15 @@ The installer ships with a multi-select menu (`install` / `reinstall_tools` / me
 | **Ligolo-ng** ⭐ | Modern TCP tunnel / pivoting tool (replaces chisel for many uses) |
 | **Lynis** ⭐ | Local Linux security audit |
 | **checksec** ⭐ | Binary hardening checks |
+| **sslscan** ⭐ | TLS certificate/cipher scanner |
+| **testssl.sh** ⭐ | Deep TLS/SSL configuration audit |
+| **Gitleaks** ⭐ | Secret/token scanner for repositories |
+| **Trivy** ⭐ | Vulnerability scanner for filesystems and container images |
+| **Semgrep** ⭐ | Static code security scanner |
+| **Syft** ⭐ | SBOM/package inventory generator |
+| **Grype** ⭐ | Vulnerability scanner for SBOMs, filesystems, and images |
+| **dnsx** ⭐ | DNS resolver/prober for recon lists |
+| **Katana** ⭐ | Web crawler for authorized targets |
 | **Anonsurf** | Anonymize the whole system through Tor (Kali) |
 | **Anonym8** | Similar to anonsurf (auto-configures Tor + iptables) |
 | **TheFatRat** | (see Remote Access) |

@@ -35,7 +35,7 @@
 ###############################################################################
 
 # set -x
-VERSION=2.2.5
+VERSION=2.2.6
 LSCRIPT_GITHUB_USER="Mkadir1999"
 LSCRIPT_GITHUB_REPO="lazyscript"
 LSCRIPT_GITHUB_BRANCH="main"
@@ -150,6 +150,7 @@ toolarray=(
 	"fsociety" "arp_scan" "netool" "sqlmap" "patator" "zeus" "evil_droid" "nosqlmap" "eggshell" "zerodoor" "objection" "cromos" "yuki-chan" "socialfish" "autosploit" "blazy"
 "striker" "hyprpulse" "instaburst" "instagram-py" "datasploit" "sitebroker" "enigma"
 "nuclei" "ffuf" "rustscan" "subfinder" "httpx" "ligolo_ng" "kerbrute" "sherlock" "gowitness" "naabu" "amass" "feroxbuster" "whatweb" "lynis" "checksec"
+"sslscan" "testssl" "gitleaks" "trivy" "semgrep" "syft" "grype" "dnsx" "katana-pd"
 )
 #setting frequent stings
 	YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=yes)"
@@ -3717,7 +3718,7 @@ function wifi_tools
 			read INSTALL
 			if [[ "$INSTALL" = "install" ]]
 			then
-				install_katana
+				install_katana_pd
 			else
 				continue
 			fi
@@ -6173,12 +6174,66 @@ do
 	else
 		echo -e ""$RS"22"$CE") "$RS"checksec"$CE"         Binary hardening checks"
 	fi
-	echo -e ""$YS"23"$CE") Safe audit       Guided passive/defensive checks"
+	if command -v sslscan >/dev/null 2>&1
+	then
+		echo -e ""$YS"23"$CE") sslscan          TLS certificate/cipher scanner"
+	else
+		echo -e ""$RS"23"$CE") "$RS"sslscan"$CE"          TLS certificate/cipher scanner"
+	fi
+	if command -v testssl.sh >/dev/null 2>&1 || [[ -x /opt/testssl.sh/testssl.sh ]]
+	then
+		echo -e ""$YS"24"$CE") testssl.sh       Deep TLS/SSL configuration audit"
+	else
+		echo -e ""$RS"24"$CE") "$RS"testssl.sh"$CE"       Deep TLS/SSL configuration audit"
+	fi
+	if command -v gitleaks >/dev/null 2>&1
+	then
+		echo -e ""$YS"25"$CE") Gitleaks         Secret/token scanner for repos"
+	else
+		echo -e ""$RS"25"$CE") "$RS"Gitleaks"$CE"         Secret/token scanner for repos"
+	fi
+	if command -v trivy >/dev/null 2>&1
+	then
+		echo -e ""$YS"26"$CE") Trivy            Vulnerability scanner for fs/images"
+	else
+		echo -e ""$RS"26"$CE") "$RS"Trivy"$CE"            Vulnerability scanner for fs/images"
+	fi
+	if command -v semgrep >/dev/null 2>&1
+	then
+		echo -e ""$YS"27"$CE") Semgrep          Static code security scanner"
+	else
+		echo -e ""$RS"27"$CE") "$RS"Semgrep"$CE"          Static code security scanner"
+	fi
+	if command -v syft >/dev/null 2>&1
+	then
+		echo -e ""$YS"28"$CE") Syft             SBOM/package inventory generator"
+	else
+		echo -e ""$RS"28"$CE") "$RS"Syft"$CE"             SBOM/package inventory generator"
+	fi
+	if command -v grype >/dev/null 2>&1
+	then
+		echo -e ""$YS"29"$CE") Grype            Vulnerability scanner for SBOM/fs"
+	else
+		echo -e ""$RS"29"$CE") "$RS"Grype"$CE"            Vulnerability scanner for SBOM/fs"
+	fi
+	if command -v dnsx >/dev/null 2>&1
+	then
+		echo -e ""$YS"30"$CE") dnsx             DNS resolver/prober for recon lists"
+	else
+		echo -e ""$RS"30"$CE") "$RS"dnsx"$CE"             DNS resolver/prober for recon lists"
+	fi
+	if command -v katana >/dev/null 2>&1
+	then
+		echo -e ""$YS"31"$CE") Katana           Web crawler for authorized targets"
+	else
+		echo -e ""$RS"31"$CE") "$RS"Katana"$CE"           Web crawler for authorized targets"
+	fi
+	echo -e ""$YS"32"$CE") Safe audit       Guided passive/defensive reports"
 	if [[ -f /root/ngrok ]]
 	then
-		echo -e ""$YS"24"$CE") Ngrok            Public tunnel / port forward"
+		echo -e ""$YS"33"$CE") Ngrok            Public tunnel / port forward"
 	else
-		echo -e ""$RS"24"$CE") "$RS"Ngrok"$CE"            Public tunnel / port forward"
+		echo -e ""$RS"33"$CE") "$RS"Ngrok"$CE"            Public tunnel / port forward"
 	fi
 	echo -e ""$YS" b"$CE") Go back"
 	echo -e ""$YS" 0"$CE") EXIT"
@@ -6564,8 +6619,161 @@ do
 		fi
 	elif [[ "$OTHERT" = "23" ]]
 	then
-		safe_audit_menu
+		if command -v sslscan >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: sslscan <host:port>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_sslscan
+			else
+				continue
+			fi
+		fi
 	elif [[ "$OTHERT" = "24" ]]
+	then
+		if command -v testssl.sh >/dev/null 2>&1 || [[ -x /opt/testssl.sh/testssl.sh ]]
+		then
+			echo -e ""$BS"Run: testssl.sh <host>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_testssl
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "25" ]]
+	then
+		if command -v gitleaks >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: gitleaks detect --source <repo-path>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_gitleaks
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "26" ]]
+	then
+		if command -v trivy >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: trivy fs <path>  or  trivy image <image>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_trivy
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "27" ]]
+	then
+		if command -v semgrep >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: semgrep --config auto <path>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_semgrep
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "28" ]]
+	then
+		if command -v syft >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: syft <path-or-image> -o table"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_syft
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "29" ]]
+	then
+		if command -v grype >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: grype <path-or-image>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_grype
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "30" ]]
+	then
+		if command -v dnsx >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: dnsx -l hosts.txt -a -resp"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_dnsx
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "31" ]]
+	then
+		if command -v katana >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: katana -u <url> -silent"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_katana
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "32" ]]
+	then
+		safe_audit_menu
+	elif [[ "$OTHERT" = "33" ]]
 	then
 		ngrok_option
 	elif [[ "$OTHERT" = 00 ]]
@@ -6596,6 +6804,10 @@ function safe_audit_menu
 		echo -e ""$YS" 2"$CE") Web fingerprint (whatweb + httpx)"
 		echo -e ""$YS" 3"$CE") Local Linux audit (lynis)"
 		echo -e ""$YS" 4"$CE") Binary hardening check (checksec)"
+		echo -e ""$YS" 5"$CE") TLS/SSL audit report (sslscan + testssl.sh)"
+		echo -e ""$YS" 6"$CE") Repo secrets + code scan (gitleaks + semgrep)"
+		echo -e ""$YS" 7"$CE") SBOM + dependency risk (syft + grype/trivy)"
+		echo -e ""$YS" 8"$CE") Web crawl + DNS probe (katana + dnsx)"
 		echo -e ""$YS" b"$CE") Go back"
 		echo -e ""$YS" 0"$CE") EXIT"
 		echo -e "Choose: "
@@ -6691,6 +6903,159 @@ function safe_audit_menu
 				read INSTALL
 				[[ "$INSTALL" = "install" ]] && install_checksec
 			fi
+			echo -e "$PAKTGB"
+			$READAK
+		elif [[ "$SAFEOPT" = "5" ]]
+		then
+			echo -e "Host or URL you own or are authorized to assess: "
+			read -r SAFEHOST
+			[[ -z "$SAFEHOST" ]] && continue
+			mkdir -p "$LPATH/reports"
+			SAFEOUT="$LPATH/reports/tls-audit-$(date +%Y%m%d-%H%M%S).txt"
+			{
+				echo "lazyscript TLS/SSL audit report"
+				echo "target=$SAFEHOST"
+				echo "date=$(date -Iseconds 2>/dev/null || date)"
+				echo ""
+				if command -v sslscan >/dev/null 2>&1
+				then
+					echo "== sslscan =="
+					sslscan "$SAFEHOST" 2>&1
+					echo ""
+				else
+					echo "sslscan not installed (type install from Other Tools -> sslscan)."
+				fi
+				if command -v testssl.sh >/dev/null 2>&1
+				then
+					echo "== testssl.sh =="
+					testssl.sh --fast --warnings batch "$SAFEHOST" 2>&1
+				elif [[ -x /opt/testssl.sh/testssl.sh ]]
+				then
+					echo "== testssl.sh =="
+					/opt/testssl.sh/testssl.sh --fast --warnings batch "$SAFEHOST" 2>&1
+				else
+					echo "testssl.sh not installed (type install from Other Tools -> testssl.sh)."
+				fi
+			} | tee "$SAFEOUT"
+			echo -e ""$YS"Saved: $SAFEOUT"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		elif [[ "$SAFEOPT" = "6" ]]
+		then
+			echo -e "Repository or source path to scan: "
+			read -r SAFEPATH
+			[[ -z "$SAFEPATH" ]] && continue
+			if [[ ! -d "$SAFEPATH" && ! -f "$SAFEPATH" ]]
+			then
+				echo -e ""$RS"Path not found: $SAFEPATH"$CE""
+				echo -e "$PAKTGB"
+				$READAK
+				continue
+			fi
+			mkdir -p "$LPATH/reports"
+			SAFEOUT="$LPATH/reports/code-audit-$(date +%Y%m%d-%H%M%S).txt"
+			{
+				echo "lazyscript repo secrets + code scan"
+				echo "path=$SAFEPATH"
+				echo "date=$(date -Iseconds 2>/dev/null || date)"
+				echo ""
+				if command -v gitleaks >/dev/null 2>&1
+				then
+					echo "== gitleaks detect =="
+					gitleaks detect --source "$SAFEPATH" --no-banner 2>&1
+					echo ""
+				else
+					echo "gitleaks not installed (type install from Other Tools -> Gitleaks)."
+				fi
+				if command -v semgrep >/dev/null 2>&1
+				then
+					echo "== semgrep --config auto =="
+					semgrep --config auto "$SAFEPATH" 2>&1
+				else
+					echo "semgrep not installed (type install from Other Tools -> Semgrep)."
+				fi
+			} | tee "$SAFEOUT"
+			echo -e ""$YS"Saved: $SAFEOUT"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		elif [[ "$SAFEOPT" = "7" ]]
+		then
+			echo -e "Filesystem path or container image to inventory: "
+			read -r SAFEASSET
+			[[ -z "$SAFEASSET" ]] && continue
+			mkdir -p "$LPATH/reports"
+			SAFEOUT="$LPATH/reports/sbom-risk-$(date +%Y%m%d-%H%M%S).txt"
+			{
+				echo "lazyscript SBOM + dependency risk report"
+				echo "asset=$SAFEASSET"
+				echo "date=$(date -Iseconds 2>/dev/null || date)"
+				echo ""
+				if command -v syft >/dev/null 2>&1
+				then
+					echo "== syft package inventory =="
+					syft "$SAFEASSET" -o table 2>&1
+					echo ""
+				else
+					echo "syft not installed (type install from Other Tools -> Syft)."
+				fi
+				if command -v grype >/dev/null 2>&1
+				then
+					echo "== grype vulnerabilities =="
+					grype "$SAFEASSET" 2>&1
+					echo ""
+				else
+					echo "grype not installed (type install from Other Tools -> Grype)."
+				fi
+				if command -v trivy >/dev/null 2>&1
+				then
+					echo "== trivy filesystem/image scan =="
+					if [[ -e "$SAFEASSET" ]]
+					then
+						trivy fs "$SAFEASSET" 2>&1
+					else
+						trivy image "$SAFEASSET" 2>&1
+					fi
+				else
+					echo "trivy not installed (type install from Other Tools -> Trivy)."
+				fi
+			} | tee "$SAFEOUT"
+			echo -e ""$YS"Saved: $SAFEOUT"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		elif [[ "$SAFEOPT" = "8" ]]
+		then
+			echo -e "URL or host list path you own or are authorized to assess: "
+			read -r SAFEWEB
+			[[ -z "$SAFEWEB" ]] && continue
+			mkdir -p "$LPATH/reports"
+			SAFEOUT="$LPATH/reports/web-crawl-dns-$(date +%Y%m%d-%H%M%S).txt"
+			{
+				echo "lazyscript web crawl + DNS probe report"
+				echo "target=$SAFEWEB"
+				echo "date=$(date -Iseconds 2>/dev/null || date)"
+				echo ""
+				if command -v katana >/dev/null 2>&1
+				then
+					echo "== katana crawl =="
+					katana -u "$SAFEWEB" -silent 2>&1
+					echo ""
+				else
+					echo "katana not installed (type install from Other Tools -> Katana)."
+				fi
+				if command -v dnsx >/dev/null 2>&1
+				then
+					echo "== dnsx probe =="
+					if [[ -f "$SAFEWEB" ]]
+					then
+						dnsx -l "$SAFEWEB" -a -resp 2>&1
+					else
+						printf '%s\n' "$SAFEWEB" | dnsx -a -resp 2>&1
+					fi
+				else
+					echo "dnsx not installed (type install from Other Tools -> dnsx)."
+				fi
+			} | tee "$SAFEOUT"
+			echo -e ""$YS"Saved: $SAFEOUT"$CE""
 			echo -e "$PAKTGB"
 			$READAK
 		elif [[ "$SAFEOPT" = "back" || "$SAFEOPT" = "b" ]]
@@ -10875,6 +11240,15 @@ function doctor_menu
 		doctor_check_item "whatweb" "command -v whatweb" "Other Tools -> WhatWeb"
 		doctor_check_item "lynis" "command -v lynis" "Other Tools -> Lynis"
 		doctor_check_item "checksec" "command -v checksec" "Other Tools -> checksec"
+		doctor_check_item "sslscan" "command -v sslscan" "Other Tools -> sslscan"
+		doctor_check_item "testssl.sh" "command -v testssl.sh || [[ -x /opt/testssl.sh/testssl.sh ]]" "Other Tools -> testssl.sh"
+		doctor_check_item "gitleaks" "command -v gitleaks" "Other Tools -> Gitleaks"
+		doctor_check_item "trivy" "command -v trivy" "Other Tools -> Trivy"
+		doctor_check_item "semgrep" "command -v semgrep" "Other Tools -> Semgrep"
+		doctor_check_item "syft" "command -v syft" "Other Tools -> Syft"
+		doctor_check_item "grype" "command -v grype" "Other Tools -> Grype"
+		doctor_check_item "dnsx" "command -v dnsx" "Other Tools -> dnsx"
+		doctor_check_item "katana" "command -v katana" "Other Tools -> Katana"
 
 		echo -e ""
 		echo -e ""$YS"lscript version:"$CE""
@@ -11406,7 +11780,7 @@ function profile_load
 		echo -e "Done"
 		return 1
 	}
-	function install_katana
+	function install_katana_pd
 	{
 		foldname="KatanaFramework"
 		gitlink="https://github.com/PowerScript/KatanaFramework.git"
@@ -12502,6 +12876,157 @@ function profile_load
 			return 0
 		fi
 		apt-get install -y checksec
+	}
+
+	function install_sslscan
+	{
+		# TLS certificate/cipher scanner.
+		if command -v sslscan >/dev/null 2>&1
+		then
+			echo -e ""$YS"sslscan already installed."$CE""
+			return 0
+		fi
+		apt-get install -y sslscan
+	}
+
+	function install_testssl
+	{
+		# Deep TLS/SSL configuration audit.
+		if command -v testssl.sh >/dev/null 2>&1 || [[ -x /opt/testssl.sh/testssl.sh ]]
+		then
+			echo -e ""$YS"testssl.sh already installed."$CE""
+			return 0
+		fi
+		apt-get install -y testssl.sh 2>/dev/null && return 0
+		apt-get install -y git ca-certificates 2>/dev/null || true
+		if [[ -d /opt/testssl.sh ]]
+		then
+			cd /opt/testssl.sh && git pull --ff-only 2>/dev/null || true
+		else
+			git clone --depth 1 https://github.com/testssl/testssl.sh.git /opt/testssl.sh
+		fi
+		chmod +x /opt/testssl.sh/testssl.sh 2>/dev/null || true
+		ln -sf /opt/testssl.sh/testssl.sh /usr/local/bin/testssl.sh 2>/dev/null || true
+	}
+
+	function install_gitleaks
+	{
+		# Secret/token scanner for Git repositories and source trees.
+		if command -v gitleaks >/dev/null 2>&1
+		then
+			echo -e ""$YS"gitleaks already installed."$CE""
+			return 0
+		fi
+		apt-get install -y gitleaks 2>/dev/null || {
+			apt-get install -y golang-go 2>/dev/null || true
+			export GOPATH="$HOME/go"
+			export PATH="$GOPATH/bin:$PATH"
+			mkdir -p "$GOPATH/bin"
+			GO111MODULE=on go install -v github.com/gitleaks/gitleaks/v8@latest
+			ln -sf "$GOPATH/bin/gitleaks" /usr/local/bin/gitleaks 2>/dev/null || true
+		}
+	}
+
+	function install_trivy
+	{
+		# Vulnerability scanner for filesystems, repositories, and container images.
+		if command -v trivy >/dev/null 2>&1
+		then
+			echo -e ""$YS"trivy already installed."$CE""
+			return 0
+		fi
+		apt-get install -y trivy 2>/dev/null || {
+			apt-get install -y golang-go 2>/dev/null || true
+			export GOPATH="$HOME/go"
+			export PATH="$GOPATH/bin:$PATH"
+			mkdir -p "$GOPATH/bin"
+			GO111MODULE=on go install -v github.com/aquasecurity/trivy/cmd/trivy@latest
+			ln -sf "$GOPATH/bin/trivy" /usr/local/bin/trivy 2>/dev/null || true
+		}
+	}
+
+	function install_semgrep
+	{
+		# Static code security scanner.
+		if command -v semgrep >/dev/null 2>&1
+		then
+			echo -e ""$YS"semgrep already installed."$CE""
+			return 0
+		fi
+		apt-get install -y semgrep 2>/dev/null || {
+			apt-get install -y python3-pip pipx 2>/dev/null || true
+			pipx install semgrep 2>/dev/null || pip3 install semgrep 2>/dev/null \
+				|| python3 -m pip install --break-system-packages semgrep
+			[[ -f "$HOME/.local/bin/semgrep" ]] && ln -sf "$HOME/.local/bin/semgrep" /usr/local/bin/semgrep 2>/dev/null || true
+		}
+	}
+
+	function install_syft
+	{
+		# SBOM/package inventory generator.
+		if command -v syft >/dev/null 2>&1
+		then
+			echo -e ""$YS"syft already installed."$CE""
+			return 0
+		fi
+		apt-get install -y syft 2>/dev/null || {
+			apt-get install -y golang-go 2>/dev/null || true
+			export GOPATH="$HOME/go"
+			export PATH="$GOPATH/bin:$PATH"
+			mkdir -p "$GOPATH/bin"
+			GO111MODULE=on go install -v github.com/anchore/syft/cmd/syft@latest
+			ln -sf "$GOPATH/bin/syft" /usr/local/bin/syft 2>/dev/null || true
+		}
+	}
+
+	function install_grype
+	{
+		# Vulnerability scanner for SBOMs, filesystems, and images.
+		if command -v grype >/dev/null 2>&1
+		then
+			echo -e ""$YS"grype already installed."$CE""
+			return 0
+		fi
+		apt-get install -y grype 2>/dev/null || {
+			apt-get install -y golang-go 2>/dev/null || true
+			export GOPATH="$HOME/go"
+			export PATH="$GOPATH/bin:$PATH"
+			mkdir -p "$GOPATH/bin"
+			GO111MODULE=on go install -v github.com/anchore/grype/cmd/grype@latest
+			ln -sf "$GOPATH/bin/grype" /usr/local/bin/grype 2>/dev/null || true
+		}
+	}
+
+	function install_dnsx
+	{
+		# DNS resolver/prober for recon lists.
+		if command -v dnsx >/dev/null 2>&1
+		then
+			echo -e ""$YS"dnsx already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+		ln -sf "$GOPATH/bin/dnsx" /usr/local/bin/dnsx 2>/dev/null || true
+	}
+
+	function install_katana
+	{
+		# Web crawler for authorized targets.
+		if command -v katana >/dev/null 2>&1
+		then
+			echo -e ""$YS"katana already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/projectdiscovery/katana/cmd/katana@latest
+		ln -sf "$GOPATH/bin/katana" /usr/local/bin/katana 2>/dev/null || true
 	}
 
 		
