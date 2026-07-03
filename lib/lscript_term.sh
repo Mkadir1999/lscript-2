@@ -73,6 +73,10 @@ lscript_term()
 	if [[ ${#cmd[@]} -eq 1 ]]
 	then
 		run_cmd="${cmd[0]}"
+	elif [[ ${#cmd[@]} -ge 3 && ( "${cmd[0]}" == "bash" || "${cmd[0]}" == "sh" ) && "${cmd[1]}" == "-c" ]]
+	then
+		# Preserve an explicit shell command string as-is instead of double-escaping it.
+		run_cmd="${cmd[2]}"
 	else
 		run_cmd=$(printf '%q ' "${cmd[@]}")
 		run_cmd=${run_cmd% }
