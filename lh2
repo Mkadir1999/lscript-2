@@ -1,4 +1,18 @@
 #! /bin/bash
+###############################################################################
+#  lh2 - Deauthentication / handshake-quality helper
+#  -------------------------------------------------------------------------
+#  Used by the main "l" launcher from the Wifi tools menu. Lets the user:
+#    1) Deauth all clients (aireplay-ng)
+#    2) Deauth all clients (mdk3)
+#    3) Deauth a single client (aireplay-ng)
+#    4) Deauth periodically (aireplay-ng loop)
+#    5) Check handshake quality (pyrit / cowpatty)
+#    6) Autocheck for handshake (forks lh21)
+#
+#  All terminal-bound commands go through lscript_term (lib/lscript_term.sh)
+#  which prefers gnome-terminal and falls back to xterm.
+###############################################################################
 LPATH="${LPATH:-/root/lscript}"
 [[ -f "$LPATH/lib/lscript_term.sh" ]] && source "$LPATH/lib/lscript_term.sh"
 [[ -f "$LPATH/lib/lscript_conf.sh" ]] && source "$LPATH/lib/lscript_conf.sh" && lscript_load_conf && lscript_apply_colors
@@ -157,9 +171,10 @@ done
 }
 function pyrit_hand_check
 {
+	local VALIDH=0
 	clear
 	echo -e "Checking handshake with pyrit..."
-	TEMP=$(pyrit -r "$HANDCAP" analyze 2>/dev/null) 
+	TEMP=$(pyrit -r "$HANDCAP" analyze 2>/dev/null)
 	TEMPHAND=$(echo "$TEMP" | grep "No valid EAOPL-handshake + ESSID detected.")
 	clear
 	if [[ "$TEMPHAND" = "" ]]
@@ -171,10 +186,10 @@ function pyrit_hand_check
 		then
 			TEMPHAD=$(echo "$TEMP" | grep "workable")
 			if [[ "$TEMPHAD" = "" ]]
-			then	
+			then
 				#TEMPHANDDD=$(pyrit -r "$HANDCAP" analyze 2>/dev/null | grep "bad")
 				TEMPHANDDD=$(echo "$TEMP" | grep "bad")
-				if [[ "TEMPHANDDD" = "" ]]
+				if [[ "$TEMPHANDDD" = "" ]]
 				then
 					echo -e "Handshake found!(Status: "$RS"unknown"$CE")"
 				else
@@ -183,7 +198,7 @@ function pyrit_hand_check
 				sleep 2
 			else
 				echo -e "Handshake found!(Status: "$RS"workable"$CE")"
-			fi			
+			fi
 		else
 			echo -e "Valid handshake found!(Status: "$YS"good"$CE")"
 			sleep 2
@@ -196,6 +211,7 @@ function pyrit_hand_check
 }
 function cowpatty_hand_check
 {
+	local VALIDH=0
 	clear
 	echo -e "Checking handshake with cowpatty..."
 	sleep 1
@@ -218,8 +234,21 @@ echo -e "$DPID" > "$LPATH"/dpid.txt
 printf '\033]2;DEAUTH MENU\a'
 k=1
 REDEAUTH="n"
-WLANNM=$(cat /root/lscript/wlanmon.txt)
+WLANNM=$(cat /root/lscript/wlanmon.txt 2>/dev/null)
 export WLANNM
+####################################
+# find_pid - sets AVPID to a unique, rotating pid-tracking filename
+# (writes the previous AVPID'd pids to "$LPATH/avpids.txt" so cleanup works)
+find_pid()
+{
+	if [[ ! -d "$LPATH" ]]
+	then
+		mkdir -p "$LPATH"
+	fi
+	local stamp
+	stamp="avpid-$(date +%s%N).txt"
+	export AVPID="$stamp"
+}
 ####################################
 if [[ -f "$LPATH"/settings/ignorenegativeone.txt ]]
 then

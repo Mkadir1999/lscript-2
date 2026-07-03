@@ -1,6 +1,6 @@
-# lscript v2.2.2 — Feature Reference
+# lscript v2.2.4 — Feature Reference
 
-**LAZY script (lscript)** is a Bash automation toolkit for **Kali Linux** that wraps WiFi penetration testing, MITM workflows, and 90+ third-party security tools behind a single command: **`lazy`**.
+**LAZY script (lscript)** is a Bash automation toolkit for **Kali Linux** that wraps **100+ security tools** behind a single command: **`lazy`**.
 
 > **Maintained by KDR** — [Mkadir1999/lscript-2](https://github.com/Mkadir1999/lscript-2)
 
@@ -42,7 +42,7 @@ l
 | `handshake` | Capture WPA/WPA2 handshakes with deauth helper |
 | `wps` | WPS PIN attacks (lh3) |
 | `wep` | WEP cracking workflow (lh4) |
-| `install` | Multi-select tool installer (90+ tools) |
+| `install` | Multi-select tool installer (100+ tools) |
 | `update` | Git-pull latest **lscript** from GitHub |
 | `update-kali` | Full **Kali OS** upgrade (apt update + full-upgrade + autoremove + autoclean) |
 | `doctor` | Health-check dependencies and paths |
@@ -51,8 +51,165 @@ l
 | `refresh` | Git-pull all tools under `/root` |
 | `profiles` | Save/load WiFi target profiles |
 | `ks` | Custom keyboard shortcuts for any tool |
+| `rotate` | Trim logs and old handshake files |
+| `changelog` | Show the recent Changelog |
+| `if` / `ifconfig` | Show network interfaces |
+| `exit` | Quit |
 
-### WiFi automation
+---
+
+## Tool categories (100+ tools)
+
+### WiFi / Wireless
+
+| Tool | What it does |
+|---|---|
+| **Fluxion** | Evil-twin WPA/WPA2 phishing — auto-clones target AP, captive portal, password capture |
+| **Wifite** | Automated wireless auditor (WPA handshake, WEP, WPS) |
+| **Wifiphisher** | Automated phishing attacks against WiFi clients (evil-twin + captive portal) |
+| **Airgeddon** | All-in-one WiFi audit: handshake, WPS, evil-twin, DoS, captive portal |
+| **Zatacker** | MITM + nmap + mail-spammer combo (manual install) |
+| **Morpheus** | Automated Ettercap TCP/IP hijacking framework |
+| **Bully** | WPS PIN brute-forcer (reaver alternative, often more stable) |
+| **Wifiautopwner** | Automated WiFi penetration suite |
+| **MDK3** | Wireless DoS / beacon flood / deauth (apt package) |
+| **Katana Framework** | Multi-purpose hacking framework with WiFi modules |
+| **The Eye** | Wireless IDS / jammer / deauth toolkit |
+| **Xerxes** | Classic DoS tool (training / lab only) |
+| **Trity** | Advanced pentest framework (cryptography, scanning, spoofing) |
+| **4nonimizer** | Anonymity helper — Tor, Privoxy, mac changer on connect |
+| **netool-toolkit** | Swiss-army toolkit for MITM, scanning, sniffing |
+
+### Remote access / payloads
+
+| Tool | What it does |
+|---|---|
+| **BeeLogger** | Generate Gmail-emailing keyloggers for Windows |
+| **Ezsploit** | Automation wrapper for Metasploit (LAN exploits, payloads) |
+| **Pupy** | Cross-platform remote administration and post-exploitation (Python) |
+| **Zirikatu** | FUD payload generator (training only) |
+| **TheFatRat** | Generate undetectable payloads + listeners |
+| **Winpayloads** | Generate undetectable Windows payloads (Python) |
+| **Shellter** | Commercial-grade dynamic PE infector (apt) |
+| **Chaos** | Generate remote payloads to control Android browsers |
+| **Empire** | PowerShell + Python post-exploitation framework |
+| **Veil** | AV-evasion payload generator |
+| **MSFPC** | One-liner Metasploit payload creator (msfvenom wrapper) |
+| **Meterpreter_Paranoid_Mode-SSL** | Wrap Meterpreter in self-signed SSL |
+| **Dr0p1t-Framework** | Multi-capability dropper (download + execute + AV-evasion) |
+| **FakeImageExploiter** | Hide an `.exe` inside an image (HTA + Powershell) |
+| **Avet** | Antivirus evasion tool (Windows payloads) |
+| **Gloom-Framework** | Linux payload framework (PenTest) |
+| **ARCANUS** | Generate payloads (apt + cron / scheduled-task backdoors) |
+| **morphHTA** | Morphing HTA attack (training only) |
+| **Demiguise** | HTA encryption tool (for Office macro chains) |
+| **DKMC** | Don't Kill My Cat — generate shellcode + droppers |
+| **Evil-Droid** | Android payload + RAT generator |
+| **EggShell** | iOS/macOS/Linux pentest framework |
+| **Zerodoor** | Native Windows backdoor generator |
+| **Objection** | Mobile runtime exploration (no jailbreak) |
+| **Cromos** | Inject code into Chrome extensions |
+| **Yuki-Chan** | Auto-pentest framework (multi-tool wrapper) |
+| **SocialFish** | Phishing framework (multi-platform) |
+| **AutoSploit** | Automated exploitation via Shodan + Metasploit |
+| **Blazy** | Login-form brute-forcer (training only) |
+| **hyprPulse** | HID attack helper (WiFi HID injection) |
+| **InstaBurst** | Instagram bruteforce (training only) |
+| **instagram-py** | Instagram brute-force script |
+| **SiteBroker** | Information gathering + auto-exploiter |
+
+### Information gathering / OSINT
+
+| Tool | What it does |
+|---|---|
+| **Sniper** | Automated pentest recon scanner |
+| **ReconDog** | All-in-one recon (whois, DNS, port scan, geo) |
+| **RED HAWK** | All-in-one scanner (SQLi, XSS, LFI, RFI, DNS, whois) |
+| **Infoga** | Email information gathering (The404Hacking fork) |
+| **KnockMail** | Verify if an email address exists |
+| **Operative framework** | OSINT + recon framework (Python) |
+| **Netattack2** | WiFi scanning + MITM (PyQt5 GUI) |
+| **Eternal scanner** | MS17-010 (EternalBlue) scanner |
+| **Eaphammer** | Targeted evil-twin attacks against WPA2-Enterprise |
+| **Nuclei** ⭐ | Fast vulnerability scanner (ProjectDiscovery) with template engine |
+| **Subfinder** ⭐ | Passive subdomain enumeration (ProjectDiscovery) |
+| **httpx** ⭐ | HTTP probe / tech fingerprint / status code (ProjectDiscovery) |
+| **Naabu** ⭐ | Fast port scanner (ProjectDiscovery) |
+| **Sherlock** ⭐ | Hunt social media accounts by username (300+ sites) |
+| **Gowitness** ⭐ | Web screenshot recon (Chrome headless) |
+
+### Web / web-app
+
+| Tool | What it does |
+|---|---|
+| **sqlmap** | Automatic SQL injection + database takeover |
+| **patator** | Multi-protocol brute-forcer (SSH, FTP, HTTP, SMTP, MySQL, …) |
+| **Nuclei** ⭐ | (re-listed — used here for web-app CVE scanning) |
+| **ffuf** ⭐ | Fast Go web fuzzer (dirs, vhosts, parameters) |
+| **Zeus-Scanner** | Advanced SQLi scanner (training only) |
+| **LFI-Suite** | Local File Inclusion scanner/exploit |
+| **FindSploit** | Search Exploit-DB / Rapid7 / packetstorm from terminal |
+| **howdoi** | Stack-Overflow-style code answers from the CLI |
+
+### Other / general / modern
+
+| Tool | What it does |
+|---|---|
+| **Cupp** | Generate targeted password wordlists |
+| **Hash Buster** | Crack hashes via online lookup (md5, sha1, sha256) |
+| **Bleachbit** | System cleaner (free disk space, wipe cache) |
+| **Dracnmap** | Nmap wrapper with auto-exploitation |
+| **Fern Wifi Cracker** | Wireless security auditing GUI |
+| **Hakku framework** | Multi-tool pentest framework |
+| **Osrframework** | OSINT framework (multiple data sources) |
+| **Kichthemout** | Kick everyone off your local network (ARP) |
+| **Ghost-phisher** | Fake AP + DHCP + HTTP server combo |
+| **Kerbrute** ⭐ | AD Kerberos username enum / password spray |
+| **Ligolo-ng** ⭐ | Modern TCP tunnel / pivoting (replaces chisel) |
+| **Anonsurf** | Anonymize the whole system through Tor (Kali) |
+| **Anonym8** | Similar to anonsurf (auto-configures Tor + iptables) |
+| **Angry IP Scanner** | Fast GUI IP / port scanner (Java) |
+| **Kwetza** | Inject Meterpreter payload into existing Android APK |
+| **Ngrok** | Public HTTPS tunnel to your local box |
+| **Netdiscover** | ARP-based network discovery (CLI) |
+| **Websploit** | Web scanner + MitM + WiFi jammer combo |
+| **OpenVAS / GVM** | Full vulnerability scanner (apt) |
+| **Geany** | Lightweight IDE / notepad |
+| **VMR** | Vulnerability scanner + reporting |
+| **Leviathan** | Wide-range mass audit toolkit |
+| **fsociety** | Multi-tool "Mr Robot" themed wrapper |
+| **Dagon** | Hash cracker / advanced hash manipulation |
+| **LALIN** | Auto-install any Kali package for pentest |
+| **BeEF** | Browser Exploitation Framework (XSS post-exploitation) |
+| **MITMf** | Man-in-the-Middle framework (BeEF, sslstrip, dnsspoof, …) |
+| **iFTOP** | Real-time network bandwidth monitor |
+
+### Deprecated (replaced with safer/more maintained alternatives)
+
+| Tool | Status | Recommended alternative |
+|---|---|---|
+| **Koadic** | Unmaintained | Empire (already in menu) |
+| **WiFi-Pumpkin** | Deprecated by author | Use Bully/Fluxion or external tools |
+| **nWatch** | Unmaintained | nmap (auto-installed as fallback) |
+| **UniByAv** | Unmaintained | Veil / TheFatRat (already in menu) |
+
+⭐ = new in v2.2.3+ (modern, actively maintained)
+
+### In-tree / built-in features (no install needed)
+
+- **Handshake capture** (WPA/WPA2) — `airodump-ng` + deauth menu + auto-validation (aircrack-ng / pyrit / cowpatty)
+- **WEP attack workflow** — fake auth + ARP replay + IV capture (lh41/42/43)
+- **WPS pixie-dust loop** — reaver with `-K 1` retry loop (lh3)
+- **MAC randomize / restore** — `macchanger` integration
+- **Monitor-mode on/off** — `airmon-ng` start/stop, ALFA AWUS036ACH support
+- **Lab / spoof menu** — DNS spoof (scoped), ARP MITM (scoped), email spoof, credential viewer, scope editor, audit log
+- **MITM helpers** — `l131` (dns2proxy), `l132` (arpspoof forward), `l133` (arpspoof reverse)
+- **Metasploit wizards** — payload generator, listener, saved listeners, eternalblue, eternalblue check, findsploit
+- **Custom keyboard shortcuts** — bind any single key to any tool/action (`ks`)
+
+---
+
+## WiFi automation
 
 - **Interface management** — managed/monitor mode, `airmon-ng`, ALFA adapter support
 - **MAC changing** — `macchanger` with configurable default MAC (`settings/lscript.conf`)
@@ -60,14 +217,14 @@ l
 - **WPS / WEP** — dedicated sub-scripts (`lh3`, `lh4`)
 - **Network profiles** — save ESSID/BSSID/channel; skip re-scanning on repeat tests (`psave` / `pload`)
 
-### MITM & credential harvesting
+## MITM & credential harvesting
 
 - **sslstrip** + **arpspoof** — automated MITM setup with `l131`/`l132`/`l133` helper terminals
 - **MITMf + BeEF** — browser hook injection workflow
 - **Email spoofing**, **SQLmap** automation, **Metasploit** payload/listener helpers
 - **wififb** — auto-save credentials from WiFi phishing (keyboard shortcut)
 
-### Lab / spoof toolkit (v2.2.0 — training only)
+## Lab / spoof toolkit (v2.2.0 — training only)
 
 | Command | Description |
 |---------|-------------|
@@ -88,15 +245,9 @@ l
 
 **Scope file:** one IP per line in `settings/lab_scope.txt`. ARP MITM refuses targets not listed when scope is set. Empty scope = no IP restriction (still training-only).
 
-### Tool installer (built-in)
+---
 
-Install from inside lscript — no hunting repos manually. Includes (among many others):
-
-Fluxion, Wifite, Wifiphisher, Airgeddon, TheFatRat, Empire, Veil, Bettercap stack tools, Routersploit, SocialFish, Yuki-Chan, and 80+ more.
-
-Multi-select install: pick several tools, press `s` to batch install.
-
-### Operations & maintenance (v2.1.7)
+## Operations & maintenance (v2.1.7+)
 
 | Feature | Command / location | Description |
 |---------|-------------------|-------------|
@@ -178,7 +329,7 @@ Open a new terminal and run `update-kali`.
 
 ---
 
-## Doctor checks (v2.1.7)
+## Doctor checks (v2.1.7+)
 
 **System:** root, WSL2/WiFi adapter, internet, LPATH, settings/profiles/handshakes/wordlists, interface configs
 
@@ -204,17 +355,24 @@ Open a new terminal and run `update-kali`.
 ├── lazy              # (installed to PATH as /usr/local/bin/lscript/lazy)
 ├── lh1–lh43           # handshake, deauth, WPS, WEP helpers
 ├── ls/                # MITM helpers (l131, l132, l133)
+├── labs/              # lab/spoof scripts (scoped arpspoof, dnsspoof)
 ├── lib/
 │   ├── lscript_term.sh
 │   ├── lscript_conf.sh
-│   └── lscript_utils.sh
+│   ├── lscript_utils.sh
+│   └── lscript_lab.sh
 ├── settings/
 │   ├── lscript.conf
-│   └── lscript.conf.example
+│   ├── lscript.conf.example
+│   ├── lab_scope.txt
+│   └── logocolor.txt
 ├── profiles/          # saved WiFi targets (*.prof)
 ├── ks/                # keyboard shortcuts
 ├── backups/           # profile export tarballs
-└── install.sh
+├── logs/              # lab_audit.log
+├── tools/ligolo-ng/   # binary install path (when present)
+├── install.sh
+└── uninstall.sh
 ```
 
 ```
@@ -242,7 +400,6 @@ Open a new terminal and run `update-kali`.
 
 Full install and launch help (use **`lazy`**, WSL, root): **[README.md — Troubleshooting](README.md#troubleshooting)**.
 
-
 ## Uninstall
 
 ```bash
@@ -269,4 +426,9 @@ Map any single key to launch a tool or built-in action without navigating menus.
 
 ## Version
 
-Current release: **2.2.2** — see [Changelog](Changelog) for full history.
+Current release: **2.2.4** — see [Changelog](Changelog) for full history.
+
+Recent highlights:
+
+- **2.2.4** — 13 broken/redirected GitHub URLs fixed (6 redirects, 4 dead→replaced, 3 deprecated with alternatives); `lscript_load_conf` no longer overrides env-set `LPATH`; `install_ligolo_ng` copy-paste URL bug fixed.
+- **2.2.3** — 20+ bug fixes; 10 new modern tools (Nuclei, ffuf, RustScan, Subfinder, httpx, Naabu, Ligolo-ng, Kerbrute, Sherlock, Gowitness); header banners and section comments added.

@@ -1,3 +1,89 @@
+2.2.3
+==== Bug fixes + modern tools ====
+
+2.2.4
+==== URL hygiene + LPATH env override ====
+
+URL FIXES (verified all repos exist on GitHub):
+- 301 redirects updated to new homes:
+  * UltimateHackers/ReconDog     → s0md3v/ReconDog
+  * reverse-shell/routersploit    → threat9/routersploit
+  * UltimateHackers/Hash-Buster  → s0md3v/Hash-Buster
+  * P0cL4bs/WiFi-Pumpkin         → P0cL4bs/WiFi-Pumpkin-deprecated
+  * leviathan-framework/leviathan → utkusen/leviathan
+  * vysec/morphHTA               → vysecurity/morphHTA
+- 404 truly dead → active replacement:
+  * toxic-ig/Trity            → mehedigb/Trity-2.0
+  * zanyarjamal/xerxes        → sepehrdaddev/Xerxes
+  * wi-fi-analyzer/mdk3-master → aircrack-ng/mdk3 (apt install mdk3)
+  * m4ll0k/Infoga             → The404Hacking/Infoga
+- Deprecated tools (no maintained successor):
+  * suraj-root/nWatch   → install_nwatch now installs nmap and prints a deprecation note
+  * zerosum0x0/koadic  → install_koadic recommends Empire (already in menu)
+  * Mr-Un1k0d3r/UniByAv → install_unibyav recommends Veil / TheFatRat (already in menu)
+
+RUNTIME BUG:
+- FIXED `lib/lscript_conf.sh` — `lscript_load_conf` was unconditionally overwriting
+  `LPATH` from `settings/lscript.conf`, breaking direct invocation of
+  `labs/*.sh` scripts that pass `LPATH=` on the env. Now conf LPATH is only
+  applied when the caller has not set one in the environment.
+
+INSTALLER:
+- FIXED `install_ligolo_ng` — `gitlink` was set to `ticarpi/jwt_tool.git`
+  (copy-paste mistake); now correctly points to `nicocha30/ligolo-ng.git`.
+  The function downloads the proxy + agent release tarballs (no `git clone`),
+  chmods them, symlinks into `/usr/local/bin/`, and uses `-SL` (show errors)
+  + proper per-archive success/failure reporting.
+
+2.2.3
+==== Bug fixes + modern tools ====
+
+CRITICAL BUG FIXES
+- FIXED `lh2:177` — `[[ "TEMPHANDDD" = "" ]]` (string literal) → `[[ "$TEMPHANDDD" = "" ]]` (variable).
+  The "bad handshake" branch was always taken instead of "unknown".
+- FIXED `lh3:587` — `cp "$LPATH"/wpslog >> "$LPATH"/wpslog` (infinite file growth, DoS) → `cat wpslogloop >> wpslog`.
+- FIXED `lh3:584` — typo `$TT3` → `$TTT3` (WPA-found branch never fired on second condition).
+- FIXED `lh3:575` — guard `-f "$LPATH/wpslog"` → `-f "$LPATH/wpslogloop"` (wpslogloop is the real log file).
+- FIXED `lh2:280,308,386` — `find_pid` was called but never defined → deauth processes became zombies.
+  Added a real `find_pid` that sets AVPID to a unique timestamped filename.
+- FIXED double `YORNAA=exit` branches in `l:9686/9806`; second is now removed.
+- FIXED `kill -- -$` (broken) → `kill -- -$$` in the exit handler.
+- FIXED broken xterm nested-quote command in `l:2286` (patator wizard) and `l:8540` (arp-scan).
+- FIXED `r6` "restart anonsurf" calling `anonym8` (wrong tool) → `anonsurf change`.
+- FIXED pip `python -m pip3 install ...` (wrong syntax) → `python3 -m pip install ...` in 3 places.
+- FIXED `pip install -r requirements` (no `.txt`, run twice) → single call with proper fallback.
+- FIXED `set_interface_number` being called 3× in a row → now one combined check.
+- FIXED `git clone $gitlink` (unquoted) + extra space in fluxion's `gitlink` (`--recursive  https://...` → `https://...`).
+  `rm -r` of the old folder now happens before clone but `git clone` is `|| return 1` so failure is visible.
+- FIXED `local VALIDH=0` scoping in `pyrit_hand_check` and `cowpatty_hand_check` (was leaking across calls).
+- FIXED `eternalbluerc.rc` injection — unescaped user input → `printf '%q'`-quoted values.
+- FIXED `errors_menu` option 6 no longer nukes `/etc/apt/sources.list.d/*`.
+  Old sources backed up to `/etc/apt/sources.list.lscript.bak`; kali-rolling line is *appended* (not overwritten).
+- FIXED `.bashrc` snippet — dropped the `alias l=…` line that conflicted with Ubuntu/Kali `ls`.
+
+PERFORMANCE / CLEANUP
+- DE-DUPLICATED 7 back-to-back `pip3 install -r requirements.txt` lines (was 22, now 15 distinct calls).
+- Standardised `pip3 install` calls to fall back to `python3 -m pip install --break-system-packages` on modern distros.
+
+NEW TOOLS (modern, actively maintained)
+- Nuclei (ProjectDiscovery) — fast vuln scanner with auto-updating templates
+- ffuf — fast Go web fuzzer
+- RustScan — modern port scanner
+- Subfinder — subdomain enum (ProjectDiscovery)
+- httpx — HTTP probe / tech fingerprint (ProjectDiscovery)
+- Naabu — fast port scan (ProjectDiscovery)
+- Ligolo-ng — modern tunneling / pivoting (proxy + agent binaries)
+- Kerbrute — AD Kerberos username enum / password spray
+- Sherlock — username OSINT (300+ sites)
+- Gowitness — web screenshot recon
+All installable from the "Other tools" menu (entries 8-17) and from "Reinstall tools".
+
+LOOK-AND-FEEL
+- New header banner at the top of `l` with structure / category overview.
+- `lh2` and `lh3` got matching header comments describing their purpose.
+- "Other tools" menu expanded from 7 → 17 entries (added 10 modern tools).
+- Bumped VERSION to 2.2.3.
+
 2.2.2
 ==== `lazy` launcher command ====
 

@@ -32,6 +32,12 @@ lscript_load_conf()
 	local conf="$LPATH/settings/lscript.conf"
 	[[ -f "$conf" ]] || return 0
 
+	# Snapshot the env LPATH so we can tell "user-set" from "conf-default".
+	# Conf values only override env when LPATH was *not* explicitly set in env.
+	local _env_lpath_was_set=0
+	[[ -n "${LPATH_ORIG:-}" || -n "${LPATH_FROM_ENV:-}" ]] && _env_lpath_was_set=1
+	[[ -n "${LPATH:-}" && "$LPATH" != "$LSCRIPT_DEFAULT_LPATH" ]] && _env_lpath_was_set=1
+
 	while IFS= read -r line || [[ -n "$line" ]]
 	do
 		line="${line%%#*}"
@@ -48,7 +54,13 @@ lscript_load_conf()
 		value="${value#\'}"
 
 		case "$key" in
-			LPATH) export LPATH="$value" ;;
+			LPATH)
+				# Only apply conf LPATH if the caller did not already set one.
+				if [[ "$_env_lpath_was_set" -eq 0 ]]
+				then
+					export LPATH="$value"
+				fi
+				;;
 			LAUNCHER) export LSCRIPT_LAUNCHER="$value" ;;
 			DEFMAC) export DEFMAC="$value" ;;
 			LOG_ROTATE_MAX_MB) export LOG_ROTATE_MAX_MB="$value" ;;

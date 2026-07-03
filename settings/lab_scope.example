@@ -1,0 +1,4 @@
+# Allowed target IPs for spoof/MITM lab tools (one per line).
+# Lines starting with # are ignored. Empty file = no IP restriction (lab use only).
+# 192.168.1.50
+# 10.0.0.100

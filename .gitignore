@@ -45,3 +45,32 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# =========================
+# lscript runtime artifacts
+# =========================
+
+# Generated at runtime by lab/spoof/mitm tools
+logs/
+
+# Per-user config and lab scope (created on first run; keep only the .example)
+/settings/lscript.conf
+/settings/lab_scope.txt
+/settings/logocolor.txt
+/settings/iftopint.txt
+/settings/ignorenegativeone.txt
+/settings/AWUS036ACH.txt
+
+# IAGREE / scope / runtime state (created in LPATH root)
+/IAGREE.txt
+/wlan.txt
+/wlanmon.txt
+/eth.txt
+/dpid*.txt
+/dpiddd.txt
+/avpid-*.txt
+/wpslog
+/wpslogloop
+/wififb*.txt
+/latestchangelog.txt
+
