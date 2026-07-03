@@ -10942,7 +10942,7 @@ function lab_dns_spoof_wizard
 	fi
 	export LAB_IF="$LABIF"
 	lscript_lab_audit "dns_spoof" "if=$LABIF"
-	lscript_term --title "DNS SPOOF LAB" --disown -- bash -c "export LPATH=\"$LPATH\" LAB_IF=\"$LABIF\"; bash \"$LPATH/labs/dns_spoof_lab.sh\"; exec bash"
+	lscript_term --title "DNS SPOOF LAB" --hold --disown -- env LPATH="$LPATH" LAB_IF="$LABIF" bash "$LPATH/labs/dns_spoof_lab.sh"
 	echo -e ""$YS"DNS spoof started in new terminal."$CE""
 	sleep 2
 }
@@ -10971,8 +10971,8 @@ function lab_arp_mitm_wizard
 	fi
 	export GATENM GATEINT TARGIP
 	lscript_lab_audit "arp_mitm_start" "gw=$GATENM target=$TARGIP if=$GATEINT"
-	lscript_term --disown -- bash -c "export LPATH=\"$LPATH\" GATENM=\"$GATENM\" GATEINT=\"$GATEINT\" TARGIP=\"$TARGIP\"; bash \"$LPATH/labs/arp_mitm_lab.sh\"; exec bash"
-	lscript_term --disown -- bash -c "export LPATH=\"$LPATH\" GATENM=\"$GATENM\" GATEINT=\"$GATEINT\" TARGIP=\"$TARGIP\"; bash \"$LPATH/labs/arp_mitm_lab_reverse.sh\"; exec bash"
+	lscript_term --title "ARP MITM LAB" --hold --disown -- env LPATH="$LPATH" GATENM="$GATENM" GATEINT="$GATEINT" TARGIP="$TARGIP" bash "$LPATH/labs/arp_mitm_lab.sh"
+	lscript_term --title "ARP MITM REVERSE" --hold --disown -- env LPATH="$LPATH" GATENM="$GATENM" GATEINT="$GATEINT" TARGIP="$TARGIP" bash "$LPATH/labs/arp_mitm_lab_reverse.sh"
 	echo -e ""$YS"ARP MITM pair started - two terminals."$CE""
 	sleep 2
 }
