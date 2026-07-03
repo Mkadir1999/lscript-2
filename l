@@ -3281,7 +3281,7 @@ function wifi_tools
 	else
 		echo -e ""$RS" 9"$CE") "$RS"Dracnmap"$CE"              Many scan options"
 	fi
-	if [[ -d "/usr/share/fern-wifi-cracker" ]]
+	if [[ -d "/root/Fern-Wifi-Cracker" || -d "/usr/share/fern-wifi-cracker" ]]
 	then	
 		echo -e ""$YS"10"$CE") Fern                  Wifi cracker GUI"
 	else
@@ -3299,7 +3299,7 @@ function wifi_tools
 	else
 		echo -e ""$RS"12"$CE") "$RS"KickThemOut"$CE"           Kick devices off your network"
 	fi
-	if [[ -d "/usr/share/ghost-phisher" ]]
+	if [[ -d "/root/ghost-phisher" || -d "/usr/share/ghost-phisher" ]]
 	then	
 		echo -e ""$YS"13"$CE") Ghost-Phisher         Fake AP,MITM,Session hijacking etc..."
 	else
@@ -3317,7 +3317,7 @@ function wifi_tools
 	else
 		echo -e ""$RS"15"$CE") "$RS"Xerxes"$CE"                The most powerful DoS tool(CAUTION)"
 	fi
-	if [[ -d /root/KatanaFramework ]]
+	if command -v ktf.console >/dev/null 2>&1 || [[ -d /root/KatanaFramework || -d /usr/share/KatanaFramework ]]
 	then
 		echo -e ""$YS"16"$CE") Katana Framework      Many penetration testing features"
 	else
@@ -3379,7 +3379,7 @@ function wifi_tools
 	fi
 	if [[ -d /root/netattack2 ]]
 	then
-		echo -e ""$YS"26"$CE") Netattack3            Advanced network scan and attack script"
+		echo -e ""$YS"26"$CE") Netattack2            Advanced network scan and attack script"
 	else
 		echo -e ""$RS"26"$CE") "$RS"Netattack2"$CE"            Advanced network scan and attack script"
 	fi
@@ -3581,10 +3581,10 @@ function wifi_tools
 		fi
 	elif [[ "$APPP" = "10" ]]
 	then
-		if [[ -d "/usr/share/fern-wifi-cracker" ]]
+		if [[ -d "/root/Fern-Wifi-Cracker" || -d "/usr/share/fern-wifi-cracker" ]]
 		then
 			cd /root/Fern-Wifi-Cracker
-			python execute.py
+			python3 execute.py 2>/dev/null || python execute.py
 			cd
 		else
 			echo -e "$TNI"
@@ -3636,10 +3636,10 @@ function wifi_tools
 		fi
 	elif [[ "$APPP" = "13" ]]
 	then
-		if [[ -d "/usr/share/ghost-phisher" ]]
+		if [[ -d "/root/ghost-phisher" || -d "/usr/share/ghost-phisher" ]]
 		then	
 			cd /root/ghost-phisher/Ghost-Phisher
-			python ghost.py
+			python3 ghost.py 2>/dev/null || python ghost.py
 			cd
 		else
 			echo -e "$TNI"
@@ -3709,7 +3709,7 @@ function wifi_tools
 		fi
 	elif [[ "$APPP" = "16" ]]
 	then
-		if [[ -d "/usr/share/KatanaFramework" ]]
+		if command -v ktf.console >/dev/null 2>&1 || [[ -d "/root/KatanaFramework" || -d "/usr/share/KatanaFramework" ]]
 		then
 			ktf.console
 		else
@@ -4256,6 +4256,12 @@ function remote_access
 		echo -e ""$YS"31"$CE") Enigma                Multiplatform payload dropper"
 	else
 		echo -e ""$RS"31"$CE") "$RS"Enigma"$CE"                 Multiplatform payload dropper"
+	fi
+	if command -v objection >/dev/null 2>&1
+	then
+		echo -e ""$YS"32"$CE") Objection             Mobile runtime exploration"
+	else
+		echo -e ""$RS"32"$CE") "$RS"Objection"$CE"             Mobile runtime exploration"
 	fi
 	echo -e ""$YS" b"$CE") Go back"
 	echo -e ""$YS"00"$CE") Main menu"
@@ -5027,6 +5033,21 @@ function remote_access
 				continue
 			fi
 		fi
+	elif [[ "$KEYLOG" = "32" ]]
+	then
+		if command -v objection >/dev/null 2>&1
+		then
+			objection
+		else
+			echo -e "$TNI"
+			read INSTALL
+			if [[ "$INSTALL" = "install" ]]
+			then
+				install_objection
+			else
+				continue
+			fi
+		fi
 	elif [[ "$KEYLOG" = "8" ]]
 	then
 		if [[ -d /root/CHAOS ]]
@@ -5348,7 +5369,7 @@ function information_gathering
 		TERMINALTITLE="INFORMATION GATHERING"
 		dash_calc
 		printf '\033]2;INFORMATION GATHERING\a'
-		if [[ -d /usr/share/sniper ]]
+		if command -v sniper >/dev/null 2>&1 || [[ -d /root/Sn1per || -d /usr/share/sniper ]]
 		then
 			echo -e ""$YS" 1"$CE") Sniper                Automated Pentest Recon Scanner"
 		else
@@ -5384,7 +5405,7 @@ function information_gathering
 		else
 			echo -e ""$RS" 6"$CE") "$RS"Operative-framework"$CE"   Get information on website or target"
 		fi
-		if [[ -d /root/osrframework ]]
+		if command -v usufy.py >/dev/null 2>&1 || command -v osrfconsole >/dev/null 2>&1 || [[ -d /root/osrframework ]]
 		then
 			echo -e ""$YS" 7"$CE") Osrfconsole           Perform accurate online researches"
 		else
@@ -5397,12 +5418,20 @@ function information_gathering
 		clear
 		if [[ "$INFOG" = 1 ]]
 		then
-			if [[ -d /usr/share/sniper ]]
+			if command -v sniper >/dev/null 2>&1 || [[ -d /root/Sn1per || -d /usr/share/sniper ]]
 			then
 				echo -e "Enter the domain you want to scan: "
 				read DOMAIN
 				clear
-				sniper $DOMAIN
+				if command -v sniper >/dev/null 2>&1
+				then
+					sniper "$DOMAIN"
+				elif [[ -x /root/Sn1per/sniper ]]
+				then
+					/root/Sn1per/sniper -t "$DOMAIN" 2>/dev/null || /root/Sn1per/sniper "$DOMAIN"
+				else
+					echo -e ""$RS"Sn1per is installed, but no launcher was detected."$CE""
+				fi
 			else
 				echo -e "$TNI"
 				read INSTALL
@@ -5513,7 +5542,7 @@ function information_gathering
 			fi
 		elif [[ "$INFOG" = "7" ]]
 		then
-			if [[ -d "/root/hakkuframework" ]]
+			if command -v usufy.py >/dev/null 2>&1 || command -v osrfconsole >/dev/null 2>&1 || [[ -d "/root/osrframework" ]]
 			then
 				while true
 				do
@@ -5647,7 +5676,7 @@ function website_tools
 		else
 			echo -e ""$RS" 7"$CE") "$RS"HyprPulse"$CE"             Brute force multiple accounts at once"
 		fi
-		if [[ -d /root/hyprPulse ]]
+		if [[ -d /root/InstaBurst ]]
 		then
 			echo -e ""$YS" 8"$CE") InstaBurst            A faster way to brute force Instagram"
 		else
@@ -5670,6 +5699,24 @@ function website_tools
 			echo -e ""$YS"11"$CE") SiteBroker            Utility to penetrate and test websites"
 		else
 			echo -e ""$RS"11"$CE") "$RS"SiteBroker"$CE"            Utility to penetrate and test websites"
+		fi
+		if [[ -d /root/Zeus-Scanner ]]
+		then
+			echo -e ""$YS"12"$CE") Zeus-Scanner         Advanced SQLi scanner"
+		else
+			echo -e ""$RS"12"$CE") "$RS"Zeus-Scanner"$CE"         Advanced SQLi scanner"
+		fi
+		if command -v findsploit >/dev/null 2>&1
+		then
+			echo -e ""$YS"13"$CE") Findsploit           Search public exploit sources"
+		else
+			echo -e ""$RS"13"$CE") "$RS"Findsploit"$CE"           Search public exploit sources"
+		fi
+		if [[ -f /usr/local/bin/howdoi ]]
+		then
+			echo -e ""$YS"14"$CE") Howdoi               Stack-Overflow-style CLI answers"
+		else
+			echo -e ""$RS"14"$CE") "$RS"Howdoi"$CE"               Stack-Overflow-style CLI answers"
 		fi
 		echo -e ""$YS" b"$CE") Go back"
 		echo -e ""$YS"00"$CE") Main menu"
@@ -5890,7 +5937,7 @@ function website_tools
 				read INSTALL
 				if [[ "$INSTALL" = "install" ]]
 				then
-					install_instagram-py
+					install_instagram_py
 				else
 					continue
 				fi
@@ -5933,7 +5980,42 @@ function website_tools
 					continue
 				fi
 			fi
-
+		elif [[ "$WEB" = 12 ]]
+		then
+			if [[ -d /root/Zeus-Scanner ]]
+			then
+				cd /root/Zeus-Scanner
+				python3 zeus.py 2>/dev/null || python zeus.py 2>/dev/null || python3 zeus-scanner.py 2>/dev/null || python zeus-scanner.py 2>/dev/null || echo -e ""$RS"Unable to detect the Zeus launcher. Run it manually inside /root/Zeus-Scanner."$CE""
+				echo -e "$PAKTGB"
+				$READAK
+			else
+				echo -e "$TNI"
+				read INSTALL
+				if [[ "$INSTALL" = "install" ]]
+				then
+					install_zeus
+				else
+					continue
+				fi
+			fi
+		elif [[ "$WEB" = 13 ]]
+		then
+			if command -v findsploit >/dev/null 2>&1
+			then
+				findsploit_menu
+			else
+				echo -e "$TNI"
+				read INSTALL
+				if [[ "$INSTALL" = "install" ]]
+				then
+					install_findsploit
+				else
+					continue
+				fi
+			fi
+		elif [[ "$WEB" = 14 ]]
+		then
+			howdoi_query
 		elif [[ "$WEB" = "" ]]
 		then
 			continue
@@ -5983,7 +6065,7 @@ do
 	else
 		echo -e ""$RS" 4"$CE") "$RS"Cupp"$CE"             Make specific worldlists"
 	fi
-	if [[ -d /root/cupp ]]
+	if [[ -f /usr/bin/bleachbit ]]
 	then
 		echo -e ""$YS" 5"$CE") Bleachbit        Free up space"
 	else
@@ -6060,6 +6142,12 @@ do
 		echo -e ""$YS"17"$CE") Naabu            Fast port scan (ProjectDiscovery)"
 	else
 		echo -e ""$RS"17"$CE") "$RS"Naabu"$CE"            Fast port scan (ProjectDiscovery)"
+	fi
+	if [[ -f /root/ngrok ]]
+	then
+		echo -e ""$YS"18"$CE") Ngrok            Public tunnel / port forward"
+	else
+		echo -e ""$RS"18"$CE") "$RS"Ngrok"$CE"            Public tunnel / port forward"
 	fi
 	echo -e ""$YS" b"$CE") Go back"
 	echo -e ""$YS" 0"$CE") EXIT"
@@ -6358,6 +6446,9 @@ do
 				continue
 			fi
 		fi
+	elif [[ "$OTHERT" = "18" ]]
+	then
+		ngrok_option
 	elif [[ "$OTHERT" = 00 ]]
 	then
 		clear
@@ -6380,6 +6471,65 @@ function findsploit_menu
 	findsploit "$FSEARCH"
 	echo -e "$PAKTGB"
 	$READAK
+}
+function howdoi_query
+{
+	if [[ ! -f "/usr/local/bin/howdoi" ]]
+	then
+		echo -e ""$RS"Howdoi is not installed.type '"$CE""$YS"install"$CE""$RS"' to install it."
+		read INSTALL
+		if [[ "$INSTALL" = "install" ]]
+		then
+			install_howdoi
+		fi
+	else
+		clear
+		if [[ -f "$LPATH"/settings/dispfull.txt ]]
+		then
+			read dispfull < "$LPATH"/settings/dispfull.txt
+			if [[ "$dispfull" = "true" ]]
+			then
+				df="-a"
+			fi
+		else
+			df=""
+		fi
+		if [[ -f "$LPATH"/settings/colorout.txt ]]
+		then
+			read colorout < "$LPATH"/settings/colorout.txt
+			if [[ "$colorout" = "true" ]]
+			then
+				co="-c"
+			fi
+		else
+			co=""
+		fi
+		if [[ -f "$LPATH"/settings/onlylink.txt ]]
+		then
+			read onlylink < "$LPATH"/settings/onlylink.txt
+			if [[ "$onlylink" = "true" ]]
+			then
+				ol="-l"
+			fi
+		else
+			ol=""
+		fi
+		if [[ -f "$LPATH"/settings/numofans.txt ]]
+		then
+			read numofans < "$LPATH"/settings/numofans.txt
+			if [[ "$numofans" = "true" ]]
+			then
+				na="-n "$numofans""
+			fi
+		else
+			na=""
+		fi
+		echo -e "How do i :  "
+		read HOW
+		howdoi $co $na $ol $df $HOW
+		echo -e "$PAKTGB"
+		$READAK
+	fi
 }
 function metasploit_menu
 {
@@ -6797,9 +6947,9 @@ function tools_menu
 	echo -e ""$YS" 1"$CE") Wifi tools"
 	echo -e ""$YS" 2"$CE") Remote access"
 	echo -e ""$YS" 3"$CE") Information gathering"
-	echo -e ""$YS" 4"$CE") Webside tools"
+	echo -e ""$YS" 4"$CE") Website tools"
 	echo -e ""$YS" 5"$CE") Others"
-	echo -e ""$YS" 6"$CE") Install/reinstall a tool"
+	echo -e ""$YS" 6"$CE") Full tool catalog ("${#toolarray[@]}" install/reinstall)"
 	echo -e ""$YS" i"$CE") Info"
 	echo -e ""$YS" b"$CE") Go back"
 	#~ echo -e ""$YS"00"$CE") Main menu"
@@ -6849,9 +6999,14 @@ function tools_menu
 			echo -e "	Self-explained."
 			echo -e "Other tools:"
 			echo -e "	Some very usefull tools that don't fit to the other categories."
-			echo -e "Install/reinstall a tool:"
-			echo -e "	From here you can install any tool available in the lazy script."
+			echo -e "Full tool catalog:"
+			echo -e "	From here you can install or reinstall every tool available in lazyscript."
 			echo -e "	If it is already installed, it will be deleted and reistalled."$CE""
+			echo -e ""
+			echo -e "Shortcut-only tools:"
+			echo -e "	Some documented tools live on the main menu or submenus:"
+			echo -e "	"$YS"ngrok"$CE", "$YS"howdoi"$CE", "$YS"anonsurf"$CE", "$YS"anonym8"$CE", "$YS"arp-scan"$CE","
+			echo -e "	"$YS"wps/bully"$CE", and "$YS"findsploit"$CE" under Metasploit."
 			echo -e ""
 			echo -e ""$BS"Do you want another tool to be added in the script?"$CE""
 			echo -e ""$BS"Submit it as an issue on my github repo:"$CE""
@@ -9696,60 +9851,7 @@ function main_options
 		local_ips
 	elif [[ "$YORNAA" = "17" ]]
 	then
-		if [[ ! -f "/usr/local/bin/howdoi" ]]
-		then
-			echo -e ""$RS"Howdoi is not installed.type '"$CE""$YS"install"$CE""$RS"' to install it."
-			read INSTALL
-			if [[ "$INSTALL" = "install" ]]
-			then
-				install_howdoi
-			fi
-		else
-			clear
-			if [[ -f "$LPATH"/settings/dispfull.txt ]]
-			then
-				read dispfull < "$LPATH"/settings/dispfull.txt
-				if [[ "$dispfull" = "true" ]]
-				then
-					df="-a"
-				fi
-			else
-				df=""
-			fi
-			if [[ -f "$LPATH"/settings/colorout.txt ]]
-			then
-				read colorout < "$LPATH"/settings/colorout.txt
-				if [[ "$colorout" = "true" ]]
-				then
-					co="-c"
-				fi
-			else
-				co=""
-			fi
-			if [[ -f "$LPATH"/settings/onlylink.txt ]]
-			then
-				read onlylink < "$LPATH"/settings/onlylink.txt
-				if [[ "$onlylink" = "true" ]]
-				then
-					ol="-l"
-				fi
-			else
-				ol=""
-			fi
-			if [[ -f "$LPATH"/settings/numofans.txt ]]
-			then
-				read numofans < "$LPATH"/settings/numofans.txt
-				if [[ "$numofans" = "true" ]]
-				then
-					na="-n "$numofans""
-				fi
-			else
-				na=""
-			fi
-			echo -e "How do i :  "
-			read HOW
-			howdoi $co $na $ol $df $HOW
-		fi
+		howdoi_query
 	elif [[ "$YORNAA" = "settings" || "$YORNAA" = "s" ]]
 	then
 		settings_menu
