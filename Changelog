@@ -1,3 +1,19 @@
+2.2.7
+==== Audit fixes (reliability + lab launch) ====
+
+- FIXED lab/spoof terminal launches: `lscript_term` now passes multi-arg commands
+  (e.g. `env LPATH=... bash labs/dns_spoof_lab.sh`) directly to gnome-terminal
+  instead of wrapping them in a fragile `bash -c` string — fixes literal `$LPATH`
+  "No such file or directory" errors on DNS/ARP lab tools.
+- FIXED `LPATH` is exported early so child terminals inherit the install path.
+- FIXED `doctor_check_item` uses `bash -c` instead of `eval`.
+- FIXED `reinstall_tools` declares the `selected` array explicitly.
+- FIXED dnsspoof / ngrok / arp-scan xterm calls — quoted variables, use `lscript_term`.
+- MOVED `find_pid` to `lib/lscript_utils.sh` as `lscript_find_pid` (shared by lh2).
+- IMPROVED `install.sh` verifies required lab/lib files exist before finishing.
+- IMPROVED WiFi-Pumpkin installer stub — warns instead of cloning deprecated repo.
+- NOTE: keyboard shortcuts cover tools 1–53 (`listshortcuts`); full catalog is ~110+.
+
 2.2.6
 ==== Swiss-knife reports + tool explanations ====
 

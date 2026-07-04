@@ -171,6 +171,26 @@ chmod +x /root/lscript/ls/l133.sh
 chmod +x /root/lscript/uninstall.sh
 chmod +x /root/lscript/lib/*.sh 2>/dev/null || true
 chmod +x /root/lscript/labs/*.sh 2>/dev/null || true
+lscript_verify_install()
+{
+	local missing=0
+	local _req
+	for _req in lib/lscript_lab.sh lib/lscript_term.sh labs/dns_spoof_lab.sh labs/arp_mitm_lab.sh
+	do
+		if [[ ! -f "/root/lscript/$_req" ]]
+		then
+			echo -e "\e[1;31mMissing required file: /root/lscript/$_req\e[0m"
+			missing=1
+		fi
+	done
+	if [[ "$missing" -eq 1 ]]
+	then
+		echo -e "Re-clone from GitHub and run install again:"
+		echo -e "  git clone https://github.com/Mkadir1999/lazyscript.git && cd lazyscript && sudo ./install.sh --yes"
+		exit 1
+	fi
+}
+lscript_verify_install
 clear
 echo -e "Copying script to /usr/local/bin/lscript"
 sleep 1

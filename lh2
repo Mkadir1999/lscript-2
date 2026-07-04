@@ -15,6 +15,7 @@
 ###############################################################################
 LPATH="${LPATH:-/root/lscript}"
 [[ -f "$LPATH/lib/lscript_term.sh" ]] && source "$LPATH/lib/lscript_term.sh"
+[[ -f "$LPATH/lib/lscript_utils.sh" ]] && source "$LPATH/lib/lscript_utils.sh"
 [[ -f "$LPATH/lib/lscript_conf.sh" ]] && source "$LPATH/lib/lscript_conf.sh" && lscript_load_conf && lscript_apply_colors
 
 #############DEFAULTS###############
@@ -236,19 +237,6 @@ REDEAUTH="n"
 WLANNM=$(cat "$LPATH/wlanmon.txt" 2>/dev/null)
 export WLANNM
 ####################################
-# find_pid - sets AVPID to a unique, rotating pid-tracking filename
-# (writes the previous AVPID'd pids to "$LPATH/avpids.txt" so cleanup works)
-find_pid()
-{
-	if [[ ! -d "$LPATH" ]]
-	then
-		mkdir -p "$LPATH"
-	fi
-	local stamp
-	stamp="avpid-$(date +%s%N).txt"
-	export AVPID="$stamp"
-}
-####################################
 if [[ -f "$LPATH"/settings/ignorenegativeone.txt ]]
 then
 	read IGN < ""$LPATH"/settings/ignorenegativeone.txt"
@@ -305,7 +293,7 @@ do
 		LASTOPTIONS="aireplay-ng -0 $DEAUTHS -a $TARGB $IGNN $WLANNM && exit"
 		export DEAUTHS
 		export TARGB
-		find_pid
+		lscript_find_pid
 		export AVPID
 		lscript_term --geometry 90x15+9999+999999 --title "DEAUTHING" --disown -- bash -c 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && aireplay-ng -0 $DEAUTHS -a $TARGB $IGNN $WLANNM && exit; exec bash'
 	elif [[ "$DT" == 4 ]]
@@ -333,7 +321,7 @@ do
 		clear
 		PER=1
 		LASTOPTIONS="4"
-		find_pid
+		lscript_find_pid
 		export AVPID
 		lscript_term --geometry 90x15+9999+999999 --title "DEAUTHING" --disown -- bash -c 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && while true; do aireplay-ng -0 $DPT -a $TARGB $IGNN $WLANNM; sleep $DIS; done && exit; exec bash'
 	elif [[ "$DT" == 5 ]]
@@ -411,7 +399,7 @@ do
 		LASTOPTIONS="mdk3 $WLANNM d -b /root/mdk3bssid.txt -c $TARGC"
 		export DEAUTHS
 		export TARGB
-		find_pid
+		lscript_find_pid
 		export AVPID
 		lscript_term --geometry 90x15+9999+999999 --title "DEAUTHING WITH MDK3" --disown -- bash -c 'DPID1=$$ && export DPID1 && echo "$DPID1" > $LPATH/$AVPID && mdk3 $WLANNM d -b /root/mdk3bssid.txt -c $TARGC; exec bash'
 	elif [[ "$DT" = 3 ]]

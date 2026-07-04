@@ -161,3 +161,15 @@ lscript_install_update_kali_alias()
 	} >> "$bashrc"
 	echo -e "Added shell alias ${YS:-}update-kali${CE:-} to $bashrc (open a new terminal to use it)."
 }
+
+# find_pid - sets AVPID to a unique pid-tracking filename for deauth cleanup (lh2).
+lscript_find_pid()
+{
+	local root="${LPATH:-/root/lscript}"
+	if [[ ! -d "$root" ]]
+	then
+		mkdir -p "$root"
+	fi
+	local stamp="avpid-$(date +%s%N).txt"
+	export AVPID="$stamp"
+}

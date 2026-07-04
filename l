@@ -35,7 +35,7 @@
 ###############################################################################
 
 # set -x
-VERSION=2.2.6
+VERSION=2.2.7
 LSCRIPT_GITHUB_USER="Mkadir1999"
 LSCRIPT_GITHUB_REPO="lazyscript"
 LSCRIPT_GITHUB_BRANCH="main"
@@ -43,6 +43,7 @@ LSCRIPT_AUTHOR="KDR"
 LSCRIPT_GITHUB_URL="https://github.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}.git"
 LSCRIPT_RAW_VERSION_URL="https://raw.githubusercontent.com/${LSCRIPT_GITHUB_USER}/${LSCRIPT_GITHUB_REPO}/${LSCRIPT_GITHUB_BRANCH}/version.txt"
 LPATH="${LPATH:-/root/lscript}"
+export LPATH
 for _lscript_lib in lscript_conf.sh lscript_term.sh lscript_utils.sh lscript_lab.sh
 do
 	if [[ -f "$LPATH/lib/$_lscript_lib" ]]
@@ -52,7 +53,8 @@ do
 	fi
 done
 unset _lscript_lib
-#Number of tools with keyboard shortcut support
+# Tools with keyboard-shortcut entries in listshortcuts() (1..HOWMANYTOOLS).
+# The full install catalog uses ${#toolarray[@]} (~110+); only these have KS UI.
 HOWMANYTOOLS=53
 BACKL="0"
 DONATIONS=13
@@ -928,6 +930,8 @@ function listshortcuts
 }
 function reinstall_tools
 {
+local -a selected=()
+local -a toolselected=()
 while true
 do
 	clear
@@ -1884,7 +1888,7 @@ then
 		echo -e "$PAKTC"
 		$READAK
 		export INTIP
-		xterm -geometry 60x15+0+999999 -e 'dnsspoof -i $INTIP -f "$LPATH"/HOSTS/hosts.txt'				
+		lscript_term --geometry 60x15+0+999999 --title "DNSSPOOF" --hold --disown -- dnsspoof -i "$INTIP" -f "$LPATH/HOSTS/hosts.txt"				
 	elif [[ "$MITMSET" = "back" || "$MITMSET" = "b" ]]
 	then
 		clear
@@ -9404,7 +9408,7 @@ function ngrok_option
 				fi
 				export PORTL
 				export PROT
-				xterm -geometry 85x15+9999+999999 -e bash -c './ngrok $PROT $PORTL; exec bash' & disown
+				lscript_term --geometry 85x15+9999+999999 --title "NGROK" --hold --disown -- bash -c "./ngrok $(printf '%q' "$PROT") $(printf '%q' "$PORTL"); exec bash"
 			elif [[ "$NG" = 4 ]]
 			then
 				while true
@@ -9610,7 +9614,7 @@ do
 	export ZERO
 	echo -e ""$BS"Scanning, please wait..."$CE""
 	tempfile="/root/lscript/tempscan.txt"
-	xterm -geometry 1x1+9999+999999 -e "bash -c 'arp-scan -I $IPF $ZERO/24 | tee $tempfile'"
+	lscript_term --geometry 1x1+9999+999999 --title "ARP-SCAN" --disown -- bash -c "arp-scan -I $(printf '%q' "$IPF") $(printf '%q' "$ZERO/24") | tee $(printf '%q' "$tempfile")"
 	#gnome-terminal -- arp-scan -I "$IPF" "$ZERO"/24 | tee $tempfile
 	clear
 	######
@@ -11123,7 +11127,7 @@ function doctor_check_item
 	NAME="$1"
 	CMD="$2"
 	HELP="$3"
-	if eval "$CMD" >/dev/null 2>&1
+	if bash -c "$CMD" >/dev/null 2>&1
 	then
 		echo -e "  ["$LGNS" OK "$CE"]  $NAME"
 	else
@@ -12235,7 +12239,7 @@ function profile_load
 		gitlink="https://github.com/zerosum0x0/koadic.git"
 		echo -e ""$RS"Koadic is no longer maintained."$CE""
 		echo -e "It is recommended to use Empire instead (already available in this menu)."
-		return 0
+		return 1
 	}
 	function install_empire
 	{
@@ -12277,12 +12281,9 @@ function profile_load
 	{
 		foldname="WiFi-Pumpkin"
 		gitlink="https://github.com/P0cL4bs/WiFi-Pumpkin-deprecated.git"
-		install_default
-		cloned=$?
-		if [[ "$cloned" == 1 ]]
-		then
-			./installer.sh --install
-		fi
+		echo -e ""$RS"WiFi-Pumpkin is deprecated and no longer maintained."$CE""
+		echo -e "Use Wifiphisher or Fluxion from the Wifi tools menu instead."
+		return 1
 	}
 	function install_veil
 	{

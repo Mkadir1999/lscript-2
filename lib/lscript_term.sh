@@ -70,6 +70,7 @@ lscript_term()
 	}
 
 	local run_cmd
+	local use_direct=0
 	if [[ ${#cmd[@]} -eq 1 ]]
 	then
 		run_cmd="${cmd[0]}"
@@ -78,13 +79,20 @@ lscript_term()
 		# Preserve an explicit shell command string as-is instead of double-escaping it.
 		run_cmd="${cmd[2]}"
 	else
+		# Multi-arg commands (env, dnsspoof, etc.) — pass through without bash -c when possible.
+		use_direct=1
 		run_cmd=$(printf '%q ' "${cmd[@]}")
 		run_cmd=${run_cmd% }
 	fi
 
 	if [[ "$hold" -eq 1 ]]
 	then
-		run_cmd="$run_cmd; exec bash"
+		if [[ "$use_direct" -eq 1 ]]
+		then
+			run_cmd="$run_cmd; exec bash"
+		else
+			run_cmd="$run_cmd; exec bash"
+		fi
 	fi
 
 	if command -v gnome-terminal >/dev/null 2>&1
@@ -93,11 +101,16 @@ lscript_term()
 		[[ "$quiet" -eq 1 ]] && gt=(-q --)
 		[[ -n "$geometry" ]] && gt+=(--geometry "$geometry")
 		[[ -n "$title" ]] && gt+=(--title "$title")
-		if [[ ${#cmd[@]} -eq 1 && "$cmd[0]" != *" "* ]]
+		if [[ "$hold" -eq 1 || "$use_direct" -eq 0 ]]
 		then
-			gt+=("${cmd[@]}")
+			if [[ ${#cmd[@]} -eq 1 && "$cmd[0]" != *" "* && "$hold" -eq 0 ]]
+			then
+				gt+=("${cmd[@]}")
+			else
+				gt+=(bash -c "$run_cmd")
+			fi
 		else
-			gt+=(bash -c "$run_cmd")
+			gt+=("${cmd[@]}")
 		fi
 		if [[ "$disown_bg" -eq 1 ]]
 		then
@@ -111,8 +124,13 @@ lscript_term()
 	local -a xt=()
 	[[ -n "$geometry" ]] && xt+=(-geometry "$geometry")
 	[[ -n "$title" ]] && xt+=(-T "$title")
-	[[ "$hold" -eq 1 ]] && xt+=(-hold)
-	xt+=(-e bash -c "$run_cmd")
+	if [[ "$hold" -eq 1 || "$use_direct" -eq 0 ]]
+	then
+		[[ "$hold" -eq 1 ]] && xt+=(-hold)
+		xt+=(-e bash -c "$run_cmd")
+	else
+		xt+=(-e "${cmd[@]}")
+	fi
 	if [[ "$disown_bg" -eq 1 ]]
 	then
 		xterm "${xt[@]}" & disown
