@@ -1,3 +1,14 @@
+2.2.8
+==== Audit completion (steps 3–12) ====
+
+- COMPLETED library function verification — all 22 `lscript_*` helpers exist in lib/.
+- FIXED remaining raw `xterm` calls (patator, wifiphisher, MITMf, BEEF, iftop) → `lscript_term` with quoting.
+- FIXED patator wizard exported wrong variable (`XTP` → `XPT`).
+- FIXED deprecated installers (UniByAv) now return failure instead of fake success.
+- CONFIRMED no remaining `eval` in project scripts.
+- NOTE: `HOWMANYTOOLS=53` is intentional — `listshortcuts()` only defines tools 1–53;
+  the full catalog (~110) uses `${#toolarray[@]}` in the tools menu.
+
 2.2.7
 ==== Audit fixes (reliability + lab launch) ====
 

