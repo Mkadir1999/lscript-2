@@ -1,4 +1,4 @@
-# lazyscript v2.2.9
+# lazyscript v2.2.10
 
 **Training toolkit for Kali** — 100+ security tools behind one command: **`lazy`**.
 

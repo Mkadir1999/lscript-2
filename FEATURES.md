@@ -1,4 +1,4 @@
-# lazyscript v2.2.9 — Feature Reference
+# lazyscript v2.2.10 — Feature Reference
 
 **lazyscript** is a Bash automation toolkit for **Kali Linux** that wraps **100+ security tools** behind a single command: **`lazy`**.
 
@@ -448,10 +448,11 @@ Map any single key to launch a tool or built-in action without navigating menus.
 
 ## Version
 
-Current release: **2.2.9** — see [Changelog](Changelog) for full history.
+Current release: **2.2.10** — see [Changelog](Changelog) for full history.
 
 Recent highlights:
 
+- **2.2.10** — bug sweep: doctor WiFi check, banner hang on long ifaces, terms NO exit, ligolo URLs, katana mapping, lab ip_forward/CIDR, email quoting.
 - **2.2.9** — redesigned CLI main menu and GitHub README; docs synced to current release.
 - **2.2.8** — remaining xterm calls quoted via `lscript_term`; patator XPT export fix; library function audit.
 - **2.2.7** — lab terminal launch fix (`env LPATH=...`); doctor without `eval`; shared `lscript_find_pid`.

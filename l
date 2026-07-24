@@ -35,7 +35,7 @@
 ###############################################################################
 
 # set -x
-VERSION=2.2.9
+VERSION=2.2.10
 LSCRIPT_GITHUB_USER="Mkadir1999"
 LSCRIPT_GITHUB_REPO="lazyscript"
 LSCRIPT_GITHUB_BRANCH="main"
@@ -309,11 +309,16 @@ function managed_spaces
 {
 	size=${#WLANN}
 	calc=$(( 11-size ))
-	numcalc=1
 	SPACESN=" "
-	while [ $numcalc != $calc ]
+	# Long iface names (e.g. wlx...) make calc <= 0; never loop forever.
+	if [[ "$calc" -le 1 ]]
+	then
+		return
+	fi
+	numcalc=1
+	while [[ $numcalc -lt $calc ]]
 	do
-		SPACESN=""${SPACESN}" "
+		SPACESN="${SPACESN} "
 		numcalc=$(( numcalc+1 ))
 	done
 }
@@ -321,11 +326,15 @@ function monitor_spaces
 {
 	size=${#WLANNM}
 	calc=$(( 11-size ))
-	numcalc=1
 	SPACESM=" "
-	while [ $numcalc != $calc ]
+	if [[ "$calc" -le 1 ]]
+	then
+		return
+	fi
+	numcalc=1
+	while [[ $numcalc -lt $calc ]]
 	do
-		SPACESM=""${SPACESM}" "
+		SPACESM="${SPACESM} "
 		numcalc=$(( numcalc+1 ))
 	done
 }
@@ -3728,7 +3737,7 @@ function wifi_tools
 			read INSTALL
 			if [[ "$INSTALL" = "install" ]]
 			then
-				install_katana_pd
+				install_katana
 			else
 				continue
 			fi
@@ -6775,7 +6784,7 @@ do
 			read INSTALL
 			if [[ "$INSTALL" = "install" ]]
 			then
-				install_katana
+				install_katana_pd
 			else
 				continue
 			fi
@@ -7702,7 +7711,8 @@ function terms_of_use
 				;;
 			NO|N)
 				echo -e "You did not accept the terms, so you cannot continue."
-				sleep 3
+				sleep 2
+				exit 1
 				;;
 			*)
 				echo -e "Please type "$YS"YES"$CE" or "$YS"NO"$CE"."
@@ -7750,6 +7760,7 @@ function eternalblue
 		PROCESSINJECTL="lsass.exe"
 		PAYLOADL="windows/x64/meterpreter/reverse_tcp"
 	else
+		PROCESSINJECTL="lsass.exe"
 		PAYLOADL="windows/meterpreter/reverse_tcp"
 	fi
 	echo -e "TARGET("$YS"0"$CE"-"$YS"8"$CE"): "
@@ -7980,7 +7991,7 @@ do
 			read -e -n 1 -r
 			break
 		fi
-		sendemail -f $SPOOFEDEMAIL -t $TARGETSEMAIL -u $SUBJECTEMAIL -m $MESSAGEEMAIL -s "$SMTPSERVER":"$SMTPPORT" -xu "$smtpemail" -xp "$smtppass"
+		sendemail -f "$SPOOFEDEMAIL" -t "$TARGETSEMAIL" -u "$SUBJECTEMAIL" -m "$MESSAGEEMAIL" -s "$SMTPSERVER":"$SMTPPORT" -xu "$smtpemail" -xp "$smtppass"
 		lscript_lab_audit "smtp_spoof" "server=$SMTPSERVER port=$SMTPPORT target=$TARGETSEMAIL from=$SPOOFEDEMAIL"
 		echo -e "$PAKTGB"
 		read -e -n 1 -r
@@ -10980,10 +10991,11 @@ function lab_arp_mitm_wizard
 		return
 	fi
 	export GATENM GATEINT TARGIP
+	echo 1 > /proc/sys/net/ipv4/ip_forward 2>/dev/null || true
 	lscript_lab_audit "arp_mitm_start" "gw=$GATENM target=$TARGIP if=$GATEINT"
 	lscript_term --title "ARP MITM LAB" --hold --disown -- env LPATH="$LPATH" GATENM="$GATENM" GATEINT="$GATEINT" TARGIP="$TARGIP" bash "$LPATH/labs/arp_mitm_lab.sh"
 	lscript_term --title "ARP MITM REVERSE" --hold --disown -- env LPATH="$LPATH" GATENM="$GATENM" GATEINT="$GATEINT" TARGIP="$TARGIP" bash "$LPATH/labs/arp_mitm_lab_reverse.sh"
-	echo -e ""$YS"ARP MITM pair started - two terminals."$CE""
+	echo -e ""$YS"ARP MITM pair started - two terminals (ip_forward enabled)."$CE""
 	sleep 2
 }
 function lab_mac_random
@@ -11133,7 +11145,19 @@ function doctor_check_item
 	NAME="$1"
 	CMD="$2"
 	HELP="$3"
-	if bash -c "$CMD" >/dev/null 2>&1
+	local ok=0
+	# Bare function names must run in this shell (bash -c cannot see them).
+	if [[ "$CMD" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] && declare -F "$CMD" >/dev/null 2>&1
+	then
+		if "$CMD" >/dev/null 2>&1
+		then
+			ok=1
+		fi
+	elif bash -c "$CMD" >/dev/null 2>&1
+	then
+		ok=1
+	fi
+	if [[ "$ok" -eq 1 ]]
 	then
 		echo -e "  ["$LGNS" OK "$CE"]  $NAME"
 	else
@@ -11805,15 +11829,18 @@ function profile_load
 	}
 	function install_katana_pd
 	{
-		foldname="KatanaFramework"
-		gitlink="https://github.com/PowerScript/KatanaFramework.git"
-		install_default
-		cloned=$?
-		if [[ "$cloned" == 1 ]]
+		# ProjectDiscovery katana (web crawler) — toolarray name: katana-pd
+		if command -v katana >/dev/null 2>&1
 		then
-			sh dependencies
-			python install
+			echo -e ""$YS"katana already installed."$CE""
+			return 0
 		fi
+		apt-get install -y golang-go 2>/dev/null || true
+		export GOPATH="$HOME/go"
+		export PATH="$GOPATH/bin:$PATH"
+		mkdir -p "$GOPATH/bin"
+		GO111MODULE=on go install -v github.com/projectdiscovery/katana/cmd/katana@latest
+		ln -sf "$GOPATH/bin/katana" /usr/local/bin/katana 2>/dev/null || true
 	}
 	function install_airgeddon
 	{
@@ -12748,28 +12775,32 @@ function profile_load
 	function install_ligolo_ng
 	{
 		# Modern tunneling / pivoting tool (replaces chisel for many uses).
-		# Distributed as static binaries (no git clone needed).
-		# gitlink is set so install_default's selector still works when called via reinstall_tools.
+		# Assets are versioned: ligolo-ng_proxy_<ver>_<arch>.tar.gz
 		gitlink="https://github.com/nicocha30/ligolo-ng.git"
-		mkdir -p /root/lscript/tools/ligolo-ng
+		mkdir -p "$LPATH/tools/ligolo-ng"
 		ARCH=$(uname -m)
 		case "$ARCH" in
 			x86_64) LIGOLO_ARCH="linux_amd64" ;;
 			aarch64) LIGOLO_ARCH="linux_arm64" ;;
 			*) LIGOLO_ARCH="linux_amd64" ;;
 		esac
-		curl -sSL -o /tmp/ligolo-proxy.tgz "https://github.com/nicocha30/ligolo-ng/releases/latest/download/ligolo-ng_proxy_${LIGOLO_ARCH}.tar.gz" \
-			&& tar -xzf /tmp/ligolo-proxy.tgz -C /root/lscript/tools/ligolo-ng proxy 2>/dev/null \
-			&& chmod +x /root/lscript/tools/ligolo-ng/proxy \
-			&& ln -sf /root/lscript/tools/ligolo-ng/proxy /usr/local/bin/ligolo-proxy 2>/dev/null \
-			|| echo -e ""$RS"Could not download ligolo-ng proxy (offline?)"$CE""
-		curl -sSL -o /tmp/ligolo-agent.tgz "https://github.com/nicocha30/ligolo-ng/releases/latest/download/ligolo-ng_agent_${LIGOLO_ARCH}.tar.gz" \
-			&& tar -xzf /tmp/ligolo-agent.tgz -C /root/lscript/tools/ligolo-ng agent 2>/dev/null \
-			&& chmod +x /root/lscript/tools/ligolo-ng/agent \
-			&& ln -sf /root/lscript/tools/ligolo-ng/agent /usr/local/bin/ligolo-agent 2>/dev/null \
-			|| echo -e ""$RS"Could not download ligolo-ng agent (offline?)"$CE""
+		LIGOLO_VER=$(curl -sSL "https://api.github.com/repos/nicocha30/ligolo-ng/releases/latest" 2>/dev/null | sed -n 's/.*"tag_name": *"v\?\([^"]*\)".*/\1/p' | head -1)
+		if [[ -z "$LIGOLO_VER" ]]
+		then
+			LIGOLO_VER="0.9"
+		fi
+		curl -sSL -o /tmp/ligolo-proxy.tgz "https://github.com/nicocha30/ligolo-ng/releases/download/v${LIGOLO_VER}/ligolo-ng_proxy_${LIGOLO_VER}_${LIGOLO_ARCH}.tar.gz" \
+			&& tar -xzf /tmp/ligolo-proxy.tgz -C "$LPATH/tools/ligolo-ng" proxy 2>/dev/null \
+			&& chmod +x "$LPATH/tools/ligolo-ng/proxy" \
+			&& ln -sf "$LPATH/tools/ligolo-ng/proxy" /usr/local/bin/ligolo-proxy 2>/dev/null \
+			|| echo -e ""$RS"Could not download ligolo-ng proxy (offline or version mismatch?)"$CE""
+		curl -sSL -o /tmp/ligolo-agent.tgz "https://github.com/nicocha30/ligolo-ng/releases/download/v${LIGOLO_VER}/ligolo-ng_agent_${LIGOLO_VER}_${LIGOLO_ARCH}.tar.gz" \
+			&& tar -xzf /tmp/ligolo-agent.tgz -C "$LPATH/tools/ligolo-ng" agent 2>/dev/null \
+			&& chmod +x "$LPATH/tools/ligolo-ng/agent" \
+			&& ln -sf "$LPATH/tools/ligolo-ng/agent" /usr/local/bin/ligolo-agent 2>/dev/null \
+			|| echo -e ""$RS"Could not download ligolo-ng agent (offline or version mismatch?)"$CE""
 		rm -f /tmp/ligolo-proxy.tgz /tmp/ligolo-agent.tgz
-		echo -e ""$YS"ligolo-ng installed. Proxy/agent in /root/lscript/tools/ligolo-ng/"$CE""
+		echo -e ""$YS"ligolo-ng installed. Proxy/agent in $LPATH/tools/ligolo-ng/"$CE""
 	}
 
 	function install_kerbrute
@@ -13035,18 +13066,16 @@ function profile_load
 
 	function install_katana
 	{
-		# Web crawler for authorized targets.
-		if command -v katana >/dev/null 2>&1
+		# PowerScript KatanaFramework (wifi tools menu)
+		foldname="KatanaFramework"
+		gitlink="https://github.com/PowerScript/KatanaFramework.git"
+		install_default
+		cloned=$?
+		if [[ "$cloned" == 1 ]]
 		then
-			echo -e ""$YS"katana already installed."$CE""
-			return 0
+			sh dependencies
+			python install
 		fi
-		apt-get install -y golang-go 2>/dev/null || true
-		export GOPATH="$HOME/go"
-		export PATH="$GOPATH/bin:$PATH"
-		mkdir -p "$GOPATH/bin"
-		GO111MODULE=on go install -v github.com/projectdiscovery/katana/cmd/katana@latest
-		ln -sf "$GOPATH/bin/katana" /usr/local/bin/katana 2>/dev/null || true
 	}
 
 		

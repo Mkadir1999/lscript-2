@@ -1,3 +1,18 @@
+2.2.10
+==== Bug sweep fixes ====
+
+- FIXED doctor WiFi check: shell functions (e.g. lscript_has_wifi_adapter) now
+  run in-process instead of via bash -c (was always FAIL).
+- FIXED managed_spaces / monitor_spaces infinite loop on long iface names (wlx...).
+- FIXED terms_of_use: answering NO now exits instead of trapping the user.
+- FIXED install_ligolo_ng: versioned GitHub asset URLs (proxy_0.9_linux_amd64).
+- FIXED katana vs katana-pd install mapping (Framework vs ProjectDiscovery).
+- FIXED lscript_term "${cmd[0]}" array index for gnome-terminal path.
+- FIXED lab ARP MITM enables ip_forward before arpspoof.
+- FIXED lab scope CIDR matching for /8 /16 /24 /32.
+- FIXED spoof_email quoting for subject/body with spaces.
+- FIXED eternalblue x86 PROCESSINJECT default (lsass.exe).
+
 2.2.9
 ==== Home UI + docs polish ====
 

@@ -80,12 +80,27 @@ lscript_lab_ip_in_scope()
 		if [[ "$line" == */* ]]
 		then
 			local base="${line%/*}"
-			local ip_base
-			ip_base=$(echo "$ip" | cut -d. -f1-3)
-			if [[ "$base" == "${ip_base}."* ]] || [[ "$base" == "$ip_base" ]]
-			then
-				return 0
-			fi
+			local prefix="${line#*/}"
+			local a b c d ea eb ec ed
+			IFS=. read -r a b c d <<< "$ip"
+			IFS=. read -r ea eb ec ed <<< "$base"
+			case "$prefix" in
+				32)
+					[[ "$ip" == "$base" ]] && return 0
+					;;
+				24)
+					[[ "$a.$b.$c" == "$ea.$eb.$ec" ]] && return 0
+					;;
+				16)
+					[[ "$a.$b" == "$ea.$eb" ]] && return 0
+					;;
+				8)
+					[[ "$a" == "$ea" ]] && return 0
+					;;
+				*)
+					# Unsupported prefix lengths: exact IP match only (already checked).
+					;;
+			esac
 		fi
 	done < "$LSCRIPT_LAB_SCOPE_FILE"
 	return 1

@@ -103,7 +103,7 @@ lscript_term()
 		[[ -n "$title" ]] && gt+=(--title "$title")
 		if [[ "$hold" -eq 1 || "$use_direct" -eq 0 ]]
 		then
-			if [[ ${#cmd[@]} -eq 1 && "$cmd[0]" != *" "* && "$hold" -eq 0 ]]
+			if [[ ${#cmd[@]} -eq 1 && "${cmd[0]}" != *" "* && "$hold" -eq 0 ]]
 			then
 				gt+=("${cmd[@]}")
 			else
